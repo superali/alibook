@@ -1,0 +1,43 @@
+
+<div class="container" ng-controller="inboxController">
+<div class="col-md-4">
+   {% verbatim %}     
+ <ul class="list-group"> 
+  <h1>CONVERSATIONS</h1>
+  <li ng-repeat=" x in conversationList" class="list-group-item">
+
+       
+  <a href="#" ng-click="get_conversation(x.from_user.username,x.to_user.username)">{{x.to_user.username}}--{{x.from_user.username}}</a>
+  </li>
+  
+ </ul>
+    
+</div>
+  {% endverbatim %}  
+<div class="col-md-8">
+    
+       
+
+ <ul class="list-group"> 
+  <h1>MESSAGES</h1>
+  <reID  pk= "{{request.user.id}}"></reID>
+ 
+   {% verbatim %}
+  <h2 ng-model='to_userName'>{{to_userName}}</h2>
+  <li  class="list-group-item">
+      <form ng-submit="sendMessage(  to_userID  )"  class="form ">
+       <textarea name="content" cols="40" rows="10" id="msgContent" class="form-control ng-pristine ng-valid ng-empty ng-touched" ng-model="message.content"></textarea>
+       <input type="submit" class="btn btn-primary" value='Send'>   
+
+       </form>
+  </li>
+ 
+  <li ng-repeat=" m in conversation" class="list-group-item">
+     {{m.from_user.username}} | {{m.created}} <br/> {{m.content}}
+  </li>
+  
+ </ul>
+   
+</div>
+</div>
+  {% endverbatim %} 

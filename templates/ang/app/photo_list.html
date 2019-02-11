@@ -1,0 +1,22 @@
+
+
+
+
+<div class="container" ng-controller="photoController">
+    
+    <div class="row">
+        <div class="col-xs-4">
+            <a href="#"  ng-click="get_photos('profile',{{user.pk}})">Profile Photos</a>
+        </div>       
+ 
+
+    </div>
+    <div class="row">
+
+
+         <profileimgs></profileimgs>
+            <a href="#" ng-click="get_photos('profile',{{user.pk}})" style="display: none" id="loadmore" >Load More</a>
+       
+
+    </div>
+</div>

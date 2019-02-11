@@ -1,0 +1,47 @@
+ 
+<div class="container" >
+ <call pk='{{object.pk}}'  op='group' ></call>
+   
+<div class="col-md-3"ng-controller="requestListController"> {{object}}<a  href="#" ng-click="joinRequest('api/groups/',{{object.pk}},'{{op}}')" > 
+   <span id="groupStatus">{{status}} </span> ({{object.joined.all.count}})</a>
+    {% if request.user in object.admins.all or request.user == object.user%}
+    
+            <jrequests></jrequests>
+    <a href="#" ng-click="get_data()" id="jrloadmore">Load More</a>
+    {% endif %}
+</div>
+<div class="col-md-6" ng-controller="postListController">
+    {% if request.user.is_authenticated %}
+    {% if request.user in object.joined.all or request.user == object.user %}
+
+<form class ="post-form" ng-submit="AddPost({{object.id}})" enctype="multipart/form-data" postType='group' fileType='post'>
+     {{post_form.as_p}}
+    <input  type="file" name="file" class="form-control"  onChange="angular.element(this).scope().onPostFileChange(this.files)" accept="image/*" id="id_image">
+
+    <input type="submit" class="btn btn-primary btn-large" value="Post">
+</form>
+    {% endif %}
+    {% endif %}
+
+
+    
+    <posts id="postcontainer"></posts>
+    <a href="#" ng-click="get_data()" id="loadmore">Load More</a>
+
+</div>
+<div class="col-md-3" ng-controller="adminListController">
+    <h1> Admins ({{object.admins.all.count}})</h1> 
+    {% for admin in object.admins.all %}
+    <a href="#" ng-click="ToggleAdmin('{{admin.username}}')"> remove | {{admin}}</a><br/>
+    {% endfor %}
+    <form  ng-submit="ToggleAdmin()" >
+     
+    <input id ="username"  name="username" type="text" ng-model='pageAdmin.username' class="form-control" >
+    <input type="submit" class="btn btn-primary btn-large" value="Add Admin">
+
+
+    
+    
+    </form></div>
+</div>
+ 

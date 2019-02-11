@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block content %}
+<div class="container">
+<h2>{% trans "your account has been locked cuz you tried to login too manny times with wrong username or password " %}
+  </h2>
+<h3> {% trans "try again after one hour"%}</h3>
+</div>
+
+{% endblock %}

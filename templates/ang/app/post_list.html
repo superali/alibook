@@ -1,0 +1,53 @@
+ <div ng-repeat="o in postList">
+  
+     {% verbatim %} 
+  
+    <img ng-repeat="im in o.images" class="post-img" src="{{im.image}}" >
+
+  
+            {{o.content}} 
+           <br/>
+  via <a href="/accounts/{{o.user.username}}"> {{o.user.username}}</a> | <a  href='#' ng-click='likePage("api/posts/",o.id)'><span id="postLike{{o.id}}"> {{o.verb_like}}</span>({{o.likes}})</a>
+     | <a href="#" id="comments" ng-click="get_comments(o.id,'comment')">comments ({{o.comment_count}})</a>
+
+      <ul class="list-group"  >
+          <li class="list-group-item" ng-repeat="c in c[o.id]">
+            
+           {{c.content}} |
+            via <a href="/accounts/{{c.user.username}}"> {{c.user.username}}</a> | <a  href='#' ng-click='likePage("api/comments/",c.id)'><span id="commentLike{{c.id}}"> {{c.verb_like}}</span>({{c.likes}})</a>
+             |                <a href="#" id="replies" ng-click="get_comments(c.id,'reply')">replies ({{c.comment_count}})</a>
+              
+            <ul class="list-group" >
+              <li class="list-group-item" ng-repeat="r in reply[c.id]">
+            {{r.content}} |
+            via <a href="/accounts/{{r.user.username}}"> {{r.user.username}}</a> | <a  href='#' ng-click='likePage("api/comments/",r.id)'><span id="commentLike{{r.id}}"> {{r.verb_like}}</span>({{r.likes}})</a>                 
+ 
+                </li>
+                
+         <a href="#" ng-click="get_comments(c.id,'reply')" style="display: none" id="rloadmore{{c.id}}" >Load More</a>
+
+          
+        <form class="reply-form" ng-submit="AddComment(c.id,'reply' )">
+                 <input class="replyInput" type="text" name="content" ng-model="comment[c.id].content">
+                  <input type="submit" class="btn btn-primary " value="Reply">
+
+         </form>
+           </ul>
+      
+
+         </li>
+ 
+         <a href="#" ng-click="get_comments(o.id,'comment')" style="display: none" id="cloadmore{{o.id}}" >Load More</a>
+
+      <form class="comment-form" ng-submit="AddComment(o.id,'comment' )">
+    <input class="commentInput" type="text" name="content" ng-model="comment[o.id].content">
+      <input type="submit" class="btn btn-primary " value="Comment">
+
+     </form>
+     </ul>
+
+    
+        {% endverbatim %}          
+
+</div>
+

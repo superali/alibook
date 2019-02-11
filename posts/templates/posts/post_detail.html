@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+
+
+{% block content %}
+<div class="container">
+<div class="row">
+{{object.content}}
+</div>
+<div class="row">
+<a href="{% url 'posts-api:like-toggle' pk=object.pk %}"> Like ({{object.liked.all.count}})</a>
+</div>
+</div>
+{% endblock %}

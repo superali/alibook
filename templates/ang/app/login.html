@@ -1,0 +1,14 @@
+ 
+<div class="container"> 
+<form method="post" action="{% url 'accounts:login' %}">
+      
+
+{% csrf_token %}
+{{form.as_p }}
+
+<input type="submit" value=' login '>
+   <a href="{% url 'accounts:password_reset' %}"><h3>  forgot your password 
+                                </h3></a>  
+</form>
+      </div>
+ 

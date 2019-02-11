@@ -1,0 +1,47 @@
+  {% verbatim %}
+
+<div class="container" ng-controller="searchController">
+ <div class="col-md-4"> 
+
+  <call op="search" ></call>
+ <ul class="list-group"> 
+  <h1>Pages</h1>
+  <li ng-repeat=" x in searchListPage" class="list-group-item"> 
+  <a href="/pages/{{x.name}}">{{x.name}}</a>
+  </li>
+  
+ </ul>
+</div>
+<div class="col-md-4" >
+   <h1>People</h1>
+
+ <ul class="list-group"> 
+  <li ng-repeat=" x in searchList" class="list-group-item"> 
+  <a href="/accounts/{{x.username}}">{{x.username}}</a>
+  </li>
+  
+ </ul>
+
+</div>
+<div class="col-md-4">
+   <h1>Groups</h1>
+
+  <ul class="list-group"> 
+  <li ng-repeat=" x in searchListGroup" class="list-group-item"> 
+  <a href="/groups/{{x.name}}">{{x.name}}</a>
+  </li>
+  
+ </ul>
+ </div>
+ <div class="col-md-10">
+   <h1>Posts</h1>
+
+  <ul class="list-group"> 
+  <li ng-repeat=" x in searchListPost" class="list-group-item"> 
+  <a href="/posts/{{x.id}}">{{x.content}}</a>
+  </li>
+  
+ </ul>
+ </div>
+</div>
+   {% endverbatim %} 

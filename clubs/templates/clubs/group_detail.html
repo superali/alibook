@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+<div class="container" >
+    
+<div class="col-md-3"ng-controller="requestListController"> {{object}}<a  href="#" ng-click="joinRequest('api/groups/',{{object.pk}},'{{op}}')" > 
+   <span id="groupStatus">{{status}} </span> ({{object.joined.all.count}})</a>
+<call pk="{{object.pk}}" op="group" ></call>
+    {% if request.user in object.admins.all or request.user == object.user%}
+    
+            <jrequests></jrequests>
+    <a href="#" ng-click="get_data()" id="jrloadmore">Load More</a>
+    {% endif %}
+</div>
+<div class="col-md-6" ng-controller="postListController">
+    {% if request.user.is_authenticated %}
+    {% if request.user in object.joined.all or request.user == object.user %}
+
+    <form class="post-form"   enctype="multipart/form-data" postType='group'>
+{% csrf_token %}
+    {{post_form.as_p}}
+    <input type="hidden" name="type" value='{{object.pk}}' id="id_type"></textarea>
+    <input type="submit" class="btn btn-primary btn-large" value="Post">
+
+</form>
+    {% endif %}
+    {% endif %}
+
+    <posts id="postcontainer"></posts>
+    <a href="#" ng-click="get_data()" id="loadmore">Load More</a>
+
+    
+</div>
+<div class="col-md-3" >
+    
+
+    </div>
+</div>
+{% endblock %}

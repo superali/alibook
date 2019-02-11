@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+<div class="container">
+    
+    <div class="col-md-3"><call pk="{{object.user.pk}}" op="profile" ></call>
+    {{object}}<br/>
+    {% if request.user.is_authenticated   %}
+    {% if request.user == object.user   %}
+    {% else   %}
+    <a href="{% url 'posts-api:frequest' fpk=request.user.pk tpk=object.user.pk op=op %}">{{status}} </a>
+    {% endif    %}
+    {% endif    %}
+    
+    
+
+    </div>
+<div class="col-md-6">
+
+
+<div ng-controller="postListController">
+
+{% if request.user.is_authenticated %}
+
+    <form class ="post-form"   enctype="multipart/form-data" postType='user'>
+     {%csrf_token %}
+     {{post_form.as_p}}
+    <input type="hidden" name="type" value='{{object.user.pk}}' id="id_type">
+       
+    <input type="submit" class="btn btn-primary btn-large" value="Post">
+
+</form>
+    {% endif %}
+    <posts id="postcontainer"></posts>
+    <a href="#" ng-click="get_data()" id="loadmore">Load More</a>
+
+    </div> 
+    
+</div>
+<div class="col-md-3">   <h1>Friends({{object.friends.count}})</h1>
+   {% for profile in friends %}
+    <a href="{% url 'accounts:detail'  username=profile.user.username%}">
+    {{profile.user.username}}</a><br/>
+    {% endfor %}   
+    {% if request.user == object.user %}   
+    <h1>rec Friends({{res_frequests.count}})</h1>
+    {% for frequest in res_frequests %}
+    <a href="{% url 'accounts:detail'  username=frequest.from_user.username%}">
+    {{frequest.from_user.username}}</a><br/>
+    {% endfor %}   
+    <h1>sent Friends({{sent_frequests.count}})</h1>
+    {% for frequest in sent_frequests %}
+    <a href="{% url 'accounts:detail'  frequest.to_user.username %}">
+    {{frequest.to_user.username}}</a><br/>
+    {% endfor %}
+    {% endif %}
+</div>
+</div>
+{% endblock %}

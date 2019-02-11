@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+
+
+{% block content %}
+<div class="container">
+
+<form id="post-form" action="{% url 'clubs:create' %}" method="post" enctype="multipart/form-data">
+{% csrf_token %}
+    {{form.as_p}}
+    <input type="submit" class="btn btn-primary btn-large" value="create">
+
+</form>
+</div>
+{% endblock %}

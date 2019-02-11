@@ -1,0 +1,31 @@
+{% load i18n %}
+
+
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+<div class="container">
+<div class="col-md-3"><a href="{% url 'pages:create' %}">Create page</a></div>
+<div class="col-md-6">
+    <form id="post-form" action="{% url 'posts:create' %}" method="post" enctype="multipart/form-data">
+{% csrf_token %}
+    {{post_form.as_p}}
+    <input type="submit" class="btn btn-primary btn-large" value="Post">
+
+</form>
+    {% for o in object_list %}
+    {{o.content}}<br/>
+    {% endfor %}
+    
+</div>
+<div class="col-md-3">   
+    {% for user in users %}
+    <a href="{% url 'accounts:detail'  username=user.username%}">
+    {{user.username}}</a><br/>
+    {% endfor %}
+    <h1>Friends({{friends.count}})</h1>
+    {% for profile in friends %}
+    <a href="{% url 'accounts:detail'  username=profile.user.username%}">
+    {{profile.user.username}}</a><br/>
+    {% endfor %}
+    </div>
+</div>

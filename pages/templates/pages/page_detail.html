@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+<div class="container" ng-controller="postListController">
+ <call pk='{{object.pk}}'  op='page' ></call>
+   
+<div class="col-md-3"> {{object}} <a  href="#" ng-click="likePage('/api/pages/',{{object.pk}})" > 
+    <span id="page" >Like </span> ({{object.liked.all.count}})</a>
+</div>
+<div class="col-md-6">
+    {% if request.user.is_authenticated %}
+    {% if request.user in object.joined.all or request.user == object.user %}
+
+    <form class="post-form"   enctype="multipart/form-data" postType='page'>
+{% csrf_token %}
+    {{post_form.as_p}}
+    <input type="hidden" name="type" value='{{object.pk}}' id="id_type"></textarea>
+    <input type="submit" class="btn btn-primary btn-large" value="Post">
+
+</form>
+    {% endif %}
+    {% endif %}
+
+
+    
+    <posts id="postcontainer"></posts>
+    <a href="#" ng-click="get_data()" id="loadmore">Load More</a>
+
+</div>
+<div class="col-md-3">
+    <h1> Admins ({{object.admins.all.count}})</h1> 
+    {% for admin in object.admins.all %}
+    <a href="{% url 'pages-api:admin-remove' pk=object.pk username=admin.username %}"> remove {{admin}}</a>
+    {% endfor %}
+    <form  action="{% url 'pages-api:admin-toggle' pk=object.pk %}" method="get" >
+{% csrf_token %}
+    
+    <input id ="username"  name="username" type="text" class="form-control" >
+    <input type="submit" class="btn btn-primary btn-large" value="Add Admin">
+
+
+    
+    
+    </form></div>
+</div>
+{% endblock %}

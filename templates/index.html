@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load cache %}
+
+{% load static %}
+
+{% block content %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+<div class="container">
+<call pk="{{request.user.pk}}" op="home" ></call>
+<div class="col-md-3"><a href="{% url 'pages:create' %}">Create page</a></div>
+<div class="col-md-6"  ng-controller="postListController">
+   
+
+        {% if request.user.is_authenticated %}
+
+    <form class ="post-form"   enctype="multipart/form-data" postType='user'>
+     {%csrf_token %}
+     {{post_form.as_p}}
+    <input type="hidden" name="type" value='{{object.user.pk}}' id="id_type">
+       
+    <input type="submit" class="btn btn-primary btn-large" value="Post">
+
+</form>
+    {% endif %}
+    <posts id="postcontainer"></posts>
+    <a href="#" ng-click="get_data()" id="loadmore">Load More</a>
+
+</div>
+<div class="col-md-3">   
+    {% for user in users %}
+    <a href="{% url 'accounts:detail'  username=user.username%}">
+    {{user.username}}</a><br/>
+    {% endfor %}
+    <h1>Friends({{friends.count}})</h1>
+
+    {% for profile in friends %}
+    <a href="{% url 'accounts:detail'  username=profile.user.username%}">
+    {{profile.user.username}}</a><br/>
+    {% endfor %}
+    </div>
+</div>
+{% endblock %}

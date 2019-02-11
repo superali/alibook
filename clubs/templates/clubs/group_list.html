@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+<div class="container">
+<div class="col-md-3"><a href="{% url 'groups:create' %}">Create Group</a></div>
+
+<div class="col-md-6">
+
+    {% for o in object_list %}
+    <a href="{{request.build_absolute_uri}}{{o.name}}">{{o.name}}</a></br>
+    {% endfor %}
+    
+</div>
+<div class="col-md-3">right</div>
+</div>
+{% endblock %}
