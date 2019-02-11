@@ -173,7 +173,7 @@ LANGUAGES = [
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 SEND_GRID_API_KEY =config('SEND_GRID_API_KEY')
 
-DEFAULT_FROM_EMAIL = '<noreply>@manpower.guru'
+DEFAULT_FROM_EMAIL = '<noreply>@alibook.herokuapp.com'
 
 EMAIL_HOST = config('EMAIL_HOST')
 EMAIL_PORT = config('EMAIL_PORT', cast=int)
@@ -213,7 +213,7 @@ AWS_S3_OBJECT_PARAMETERS = {
 } 
 
 AWS_LOCATION = 'static'
-DEFAULT_FILE_STORAGE = 'shopping.storage_backend.MediaStorage'  # <-- here is where we reference it
+DEFAULT_FILE_STORAGE = 'fb.storage_backend.MediaStorage'  # <-- here is where we reference it
 
 STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'   

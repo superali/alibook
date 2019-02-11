@@ -174,7 +174,7 @@ LANGUAGES = [
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 SEND_GRID_API_KEY =config('SEND_GRID_API_KEY')
 
-DEFAULT_FROM_EMAIL = '<noreply>@manpower.guru'
+DEFAULT_FROM_EMAIL = '<noreply>@alibook.herokuapp.com'
 
 EMAIL_HOST = config('EMAIL_HOST')
 EMAIL_PORT = config('EMAIL_PORT', cast=int)
