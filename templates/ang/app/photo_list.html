@@ -48,9 +48,9 @@
 
                          <a href="#" ng-click="get_comments(o.id,'commentpicture')" style="display: none" id="cloadmore{{photo.id}}" >Load More</a>
 
-                      <form class="comment-form" ng-submit="AddComment(photo.id,'commentpicture' )">
                     <input class="form-control commentInput" type="text" name="content" ng-model="comment[photo.id].content">
-                      <input type="submit" class="btn btn-primary " value="Comment">
+                        <a class="btn btn-primary" href="#" 
+                           ng-click="AddComment(photo.id,'commentpicture' )">Comment</a>
 
                      </form>
                      </ul>
