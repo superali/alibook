@@ -28,7 +28,6 @@ class Comment(models.Model):
     content_type = models.ForeignKey(ContentType,on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type','object_id')
-    #group = models.ForeignKey(Group, related_name="posts",null=True, blank=True)
     updated     = models.DateTimeField(auto_now=True)
     liked =   models.ManyToManyField(settings.AUTH_USER_MODEL,blank=True,related_name='liked_comment')
 

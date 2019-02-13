@@ -43,6 +43,12 @@ app.config(function($routeProvider,$locationProvider){
             return 'api/templates/'+params.name +'/group.html';
         }
          ,
+     })    
+    .when('/posts/:pk',{
+        templateUrl :function(params){
+            return 'api/templates/'+params.pk +'/post.html';
+        }
+         ,
      })
     .when('/groups',{
         templateUrl :function(params){
@@ -110,6 +116,37 @@ app.controller('searchController',['$scope','searchService','$cookies','$locatio
         $scope.searchListGroup= searchService.searchListGroup;
         $scope.searchListPage= searchService.searchListPage;
         $scope.searchListPost= searchService.searchListPost;
+   
+}]);
+app.controller('postDetailController',['$scope','searchService','$cookies','$location','$http','$rootScope',function($scope,searchService,$cookies,$location,$http,$rootScope){
+    
+        $scope.postDetail;
+        var postID=angular.element(document.querySelector("post"));
+        $scope.pk =postID.attr('pk');
+        $scope.get_post= function(){
+                var url='/api/posts/'+$scope.pk+'/'
+                console.log(url)
+
+        $http(
+            {
+            method:"GET",
+            url:url,
+             headers:{"X-CSRFToken":csrftoken},
+            }
+             ).then(
+            function(response){
+                 console.log(response.data)
+                $scope.postDetail=response.data[0];
+               },
+
+             function(response){
+                console.log(response)
+             }
+
+        ) 
+        };
+    $scope.get_post();
+    
    
 }]);
 app.controller('inboxController',['$scope','searchService','$cookies','$location','$http','$rootScope',function($scope,searchService,$cookies,$location,$http,$rootScope){
@@ -190,7 +227,8 @@ app.controller('inboxController',['$scope','searchService','$cookies','$location
             function(response){
                 console.log(response)
             $scope.conversation.unshift(response.data)
-                $("#msgContent textarea").val("")
+
+                $("#msgContent").val("")
 
 
                },
@@ -232,6 +270,8 @@ app.controller('rightController',['$scope','$cookies','$location','$http','$root
 
     };
 }]);
+
+
 app.controller('headerController',['$scope','searchService','$cookies','$location','$http','$rootScope',function($scope,searchService,$cookies,$location,$http,$rootScope){
         $scope.searchList= searchService.searchList;
         $scope.searchListPage= searchService.searchListPage;
@@ -366,6 +406,7 @@ app.controller('headerController',['$scope','searchService','$cookies','$locatio
              ).then(
             function(response){
                 $scope.actionList=response.data.results;
+                 console.log(response)
                },
 
              function(response){
@@ -403,10 +444,150 @@ app.controller('headerController',['$scope','searchService','$cookies','$locatio
 
     
 }]);
+
 app.controller('photoController',['$scope',  '$resource','$http',function($scope, $resource,$http){
+    $scope.comment={}  
     
+ 
+    $scope.AddComment=function(pk,op){
+      
+    var url="/api/comments/create/"+op+"/"+pk
+console.log('urrrrr')
+console.log(url)
+    $http(
+        {
+        method:"POST",
+        url:url,
+        data:$scope.comment[pk],
+        headers:{"X-CSRFToken":csrftoken},
+          }
+         ).then(
+        function(response){
+            if(op=='commentpicture'){  
+            if(!$scope.c[pk]){
+               $scope.c[pk]=[] 
+            }
+             $scope.c[pk].unshift(response.data)
+                 $(".comment-form .commentInput").val("")
+
+            }else{
+            if(!$scope.reply[pk]){
+               $scope.reply[pk]=[] 
+            }
+             $scope.reply[pk].unshift(response.data)
+             $(".reply-form .replyInput").val("")
+
+               
+            }
+           },
+
+         function(response){
+            console.log(response)}
+ 
+    ) 
+        
+    };
+    
+    
+    $scope.c ={}
+    $scope.postsLikes ={}
+    $scope.commetnsLikes ={}
+    $scope.ncurl ={}
+    $scope.reply ={}
+    $scope.nreplyurl ={}
+        
+    $scope.get_comments=function(pk,op){
+        var url="/api/comments/"+op+"/"+pk
+        console.log(url)
+        if(op == 'commentpicture'){ 
+
+        if($scope.ncurl[pk]){
+            url= $scope.ncurl[pk];
+        }}else{
+            if($scope.nreplyurl[pk]){
+                        url= $scope.nreplyurl[pk];
+            }
+
+            }    
+            $http(
+            {
+            method:"GET",
+            url:url,
+              }
+             ).then(
+            function(response){
+                if(op == 'commentpicture'){ 
+                $scope.c[pk]=response.data.results; 
+  
+                if(response.data.next){
+                    $scope.ncurl[pk]=response.data.next
+                    document.querySelector("#cloadmore"+pk.toString()).style.cssText="display : block"
+
+                 }
+                else{
+                     document.querySelector("#cloadmore"+pk.toString()).style.cssText="display : none"
+                 }
+                }else{
+
+                 $scope.reply[pk]=response.data.results; 
+                if(response.data.next){
+                    $scope.nreplyurl[pk]=response.data.next
+                    document.querySelector("#rloadmore"+pk.toString()).style.cssText="display : block"
+
+                 }
+                else{
+                     document.querySelector("#rloadmore"+pk.toString()).style.cssText="display : none"
+                 }               
+                    }
+               },
+
+             function(response){
+                console.log(response)}
+
+            ) 
+        
+    }
     $scope.profileimgList;
-   
+    $scope.photo;
+    $scope.likeBtn = angular.element(document.querySelector("#likeBtn"));
+ 
+    $scope.likePicture=function(url,pk){
+        var likedUrl =getBaseUrl+url+pk+'/like/'
+        console.log(likedUrl)
+        console.log(url)
+    $http(
+        {
+        method:"GET",
+        url:likedUrl,
+          }
+         ).then(
+        function(response){ 
+         if(url='api/comments/'){
+            if(response.data.liked){
+                angular.element(document.querySelector("#commentLike"+pk)).text('Unlike')
+            }else{
+                angular.element(document.querySelector("#commentLike"+pk)).text('Like')
+            }
+         }else{
+             
+       
+         if(response.data.liked){
+                $scope.likeBtn.text("Unlike") 
+            }else{
+                 $scope.likeBtn.text("Like")
+            }
+               }
+           },
+
+         function(response){
+            console.log(response)}
+ 
+    )
+    }
+    $scope.photoClicked=function(photo){
+          
+        $scope.photo=photo;
+    };
     $scope.get_photos=function(op,pk){
 
         var url='/api/files/photos/'+op+'/'+pk+'/'
@@ -429,14 +610,13 @@ app.controller('photoController',['$scope',  '$resource','$http',function($scope
 
         };
 }]);
-app.controller('adminListController',['$scope',  '$resource','$http',function($scope, $resource,$http){
+app.controller('adminListController',['$scope', '$location',  '$resource','$http',function($scope, $location,$resource,$http){
     
     var objectType=angular.element(document.querySelector("call"));
     $scope.pk =objectType.attr('pk');
     $scope.op =objectType.attr('op');
     $scope.pageAdmin={}
-    console.log($scope.pk)
-    console.log($scope.op)
+
     
     $scope.ToggleAdmin=function(username){
         var name = username;
@@ -484,10 +664,11 @@ app.controller('adminListController',['$scope',  '$resource','$http',function($s
     };
 }]);
 
-app.controller('leftSideController',['$scope', '$resource','$http',function($scope, $resource,$http){
+app.controller('leftSideController',['$scope', '$location', '$resource','$http',function($scope, $location,$resource,$http){
 
     $scope.files=[]; 
-    
+ $scope.currentUserName= angular.element(document.querySelector("#userName")).attr('user')
+   
     
     $scope.onFileChange = function(files){
          $scope.files=files;
@@ -515,7 +696,7 @@ app.controller('leftSideController',['$scope', '$resource','$http',function($sco
                         function(response){
                          $scope.files=[]
                         $scope.img_new= response.data.img;
-                            $location.path('/')
+                            $location.path('/accounts/'+$scope.currentUserName+'/')
 
                         },
                         function(response)
@@ -550,14 +731,11 @@ app.controller('leftSideController',['$scope', '$resource','$http',function($sco
             if(response.data.op == 'send'){
                 $scope.friendStatus.text('Cancel Request')
                 $scope.friendOp='cancel'
-                console.log('op')
-                console.log( $scope.friendOp)
             } 
             else if(response.data.op == 'cancel'){
                 $scope.friendStatus.text('Add Friend')
                 $scope.friendOp='send'
-                console.log('op')
-                console.log( $scope.friendOp)
+
 
             } 
                
@@ -735,7 +913,33 @@ app.controller('pageListController',['$scope', '$resource','$http',function($sco
     $scope.get_pages();
 }])
 app.controller('postListController',['$scope','$cookies', '$resource','$http',function($scope,$cookies, $resource,$http){
+        $scope.postDetail;
+        var postID=angular.element(document.querySelector("post"));
+        $scope.postPk =postID.attr('pk');
+        $scope.get_post= function(){
+                var url='/api/posts/'+$scope.postPk+'/'
 
+        $http(
+            {
+            method:"GET",
+            url:url,
+             headers:{"X-CSRFToken":csrftoken},
+            }
+             ).then(
+            function(response){
+                 console.log(response.data)
+                $scope.postDetail=response.data[0];
+               },
+
+             function(response){
+                console.log(response)
+             }
+
+        ) 
+        };
+   
+    
+   
      $scope.AddFile = function(imgType,pk=0){
  
         if($scope.files.length !=0)
@@ -936,7 +1140,8 @@ app.controller('postListController',['$scope','$cookies', '$resource','$http',fu
     $scope.likePage = function( url,pk){
 
        var likedUrl =getBaseUrl+url+pk+'/like/'
-       console.log(url)
+       
+       console.log(likedUrl)
 
     $http(
         {
@@ -1008,7 +1213,12 @@ app.controller('postListController',['$scope','$cookies', '$resource','$http',fu
             console.log(response)}
  
     )};
-    $scope.get_data();
+    if($scope.postPk){
+         $scope.get_post();
+    }else{
+            $scope.get_data();
+
+    }
 
 }]);
 
@@ -1139,7 +1349,7 @@ app.directive("groups",function(){
 app.directive("profileimgs",function(){
     return {
         templateUrl :function(params){
-            return 'api/templates/'+params.name +'/profile_img_item.html';
+            return 'api/templates/'+params.name +'/photo.html';
         } , 
         
     }

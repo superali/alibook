@@ -1,25 +1,31 @@
- <div ng-repeat="o in postList">
+<div class="container" ng-controller="postListController" >
+<post pk={{id}}></post>
+ {% verbatim %} 
   
-     {% verbatim %} 
+    <img ng-repeat="im in postDetail.images" class="post-img" src="{{im.image}}" >
+     
+ <br/>
   
-    <img ng-repeat="im in o.images" class="post-img" src="{{im.image}}" >
-
-  <a href="/posts/{{o.id}}"><h3>{{o.content}} </h3> </a>
-            
+            {{postDetail.content}} 
+       
+ 
            <br/>
-  via <a href="/accounts/{{o.user.username}}"> {{o.user.username}}</a> | <a  href='#' ng-click='likePage("api/posts/",o.id)'><span id="postLike{{o.id}}"> {{o.verb_like}}</span>({{o.likes}})</a>
-     | <a href="#" id="comments" ng-click="get_comments(o.id,'comment')">comments ({{o.comment_count}})</a>
+ 
+  via <a href="/accounts/{{postDetail.user.username}}"> {{postDetail.user.username}}</a> | <a  href='#' ng-click='likePage("api/posts/", postDetail.id )'><span id="postLike"> {{postDetail.verb_like}}</span>({{postDetail.likes}})</a>
+  
+     | <a href="#" id="comments" ng-click="get_comments(postDetail.id,'comment')">comments ({{postDetail.comment_count}})</a>
 
       <ul class="list-group"  >
-          <li class="list-group-item" ng-repeat="c in c[o.id]">
+       
+          <li class="list-group-item" ng-repeat="c in c[postDetail.id]">
             
-           <h4> {{c.content}} </h4><br/>
+           {{c.content}} |
             via <a href="/accounts/{{c.user.username}}"> {{c.user.username}}</a> | <a  href='#' ng-click='likePage("api/comments/",c.id)'><span id="commentLike{{c.id}}"> {{c.verb_like}}</span>({{c.likes}})</a>
              |                <a href="#" id="replies" ng-click="get_comments(c.id,'reply')">replies ({{c.comment_count}})</a>
               
             <ul class="list-group" >
               <li class="list-group-item" ng-repeat="r in reply[c.id]">
-            <h5> {{r.content}}</h5> |
+            {{r.content}} |
             via <a href="/accounts/{{r.user.username}}"> {{r.user.username}}</a> | <a  href='#' ng-click='likePage("api/comments/",r.id)'><span id="commentLike{{r.id}}"> {{r.verb_like}}</span>({{r.likes}})</a>                 
  
                 </li>
@@ -37,16 +43,16 @@
 
          </li>
  
-         <a href="#" ng-click="get_comments(o.id,'comment')" style="display: none" id="cloadmore{{o.id}}" >Load More</a>
+         <a href="#" ng-click="get_comments(postDetail.id,'comment')" style="display: none" id="cloadmore{{postDetail.id}}" >Load More</a>
 
-      <form class="comment-form" ng-submit="AddComment(o.id,'comment' )">
-    <input class="commentInput" type="text" name="content" ng-model="comment[o.id].content">
+      <form class="comment-form" ng-submit="AddComment(postDetail.id,'comment' )">
+    <input class="commentInput" type="text" name="content" ng-model="comment[postDetail.id].content">
       <input type="submit" class="btn btn-primary " value="Comment">
 
      </form>
      </ul>
 
-    
+ 
         {% endverbatim %}          
 
 </div>

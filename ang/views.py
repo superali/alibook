@@ -1,6 +1,7 @@
 from django.shortcuts import render
 import os
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.contenttypes.models import ContentType
 
 from django.views.generic import View
 from django.conf import settings
@@ -12,6 +13,8 @@ User=get_user_model()
 
 from accounts.models import FriendRequest
 from accounts.forms import UserLoginForm
+from posts.models import Post
+from comments.models import Comment
 from pages.models import Page
 from clubs.models import Group ,JoinRequest
 
@@ -144,7 +147,7 @@ class AngularTemplateView(View):
             user=User.objects.get(pk=name)
             return render(request,final_path,{'user':user })
 
-        elif item=='profile_img_item':
+        elif item=='photo':
             return render(request,final_path,{ })
 
         elif item=='login':
@@ -155,6 +158,13 @@ class AngularTemplateView(View):
 
         elif item=='inbox':
             return render(request,final_path,{ })
+        
+        elif item=='post':
+            content_type=ContentType.objects.get_for_model(Post)
+            post=Post.objects.get(id=name)
+            comment_count=Comment.objects.filter(content_type=content_type,object_id=post.id).count()             
+            return render(request,final_path,{'id':name,
+                                            })
 
 
 #def get_angular_template(request,item=None):

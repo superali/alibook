@@ -25,7 +25,7 @@
    {% verbatim %}
   <h2 ng-model='to_userName'>{{to_userName}}</h2>
   <li  class="list-group-item">
-      <form ng-submit="sendMessage(  to_userID  )"  class="form ">
+      <form ng-submit="sendMessage(  to_userID  )"  class="form " id="msgForm">
        <textarea name="content" cols="40" rows="10" id="msgContent" class="form-control ng-pristine ng-valid ng-empty ng-touched" ng-model="message.content"></textarea>
        <input type="submit" class="btn btn-primary" value='Send'>   
 

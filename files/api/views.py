@@ -18,7 +18,23 @@ from accounts.models import Profile
 from .serializers import PictureDisplaySerializer
 
 from files.models import Picture
+from actions.utils import create_action
 
+class LikeToggleView(APIView):
+    def get(self,request,pk,format=None):
+        post=Picture.objects.filter(pk=pk).first()
+        if request.user.is_authenticated:
+            is_liked= Picture.objects.like_toggle(request.user,post)
+            if is_liked:
+                url='/files/'+str(post.pk)+'/'
+                create_action(request.user,'liked a picture',url,post)
+            else:
+                url='/files/'+str(  post.pk)+'/'
+                create_action(request.user,'Unliked a picture',url,post) 
+            return Response({'liked':is_liked})
+        return Response(None,status=400) 
+
+   
 class FileCreateAPIView(APIView):
     parser_class = (FileUploadParser,)
     
@@ -71,14 +87,13 @@ class PhotoList(generics.ListAPIView):
         elif op=='page':
             content_type=ContentType.objects.get_for_model(Page)
             queryset=Picture.objects.filter(content_type=content_type,object_id=pk)
-            print(queryset)
-            print('queryset')
+
         elif op=='group':
             content_type=ContentType.objects.get_for_model(Group)
             queryset=Picture.objects.filter(content_type=content_type,object_id=pk)
 
         else:
-             queryset=Picture.objects.all()[:10]
+             queryset=Picture.objects.filter(user=User.objects.get(pk=pk)) 
            
 
 

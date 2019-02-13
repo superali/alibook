@@ -12,6 +12,7 @@ urlpatterns = [
     path('search/', views.SearchAPIView.as_view(), name='search'),
 
     url(r'^(?P<pk>\d+)/like/$', views.LikeToggleView.as_view(), name='like-toggle'),
+    url(r'^(?P<pk>\d+)/$', views.PostDetail.as_view(), name='detail'),
     url(r'^(?P<op>[\w.@+-]+)/(?P<fpk>\d+)/(?P<tpk>\d+)/$',views.FRequest.as_view(), name='frequest'),
     
         path('create/', views.PostCreateAPIView.as_view(), name='create'),

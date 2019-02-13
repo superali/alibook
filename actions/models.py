@@ -9,6 +9,7 @@ from django.contrib.contenttypes.models import ContentType
 class Action(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name='actions',db_index=True)
     verb = models.CharField(max_length = 255)
+    url = models.CharField(blank=True,null=True,max_length = 255)
     content_type = models.ForeignKey(ContentType,on_delete=models.CASCADE,blank=True,null=True)
     object_id = models.PositiveIntegerField(blank=True,null=True)
     content_object = GenericForeignKey('content_type','object_id')   

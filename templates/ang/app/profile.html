@@ -8,7 +8,7 @@
   {% if obj.picture %} 
         <img src="{{obj.picture.url }}" class="profileimg">
   {% endif  %} 
-     <h2> {{obj.user.username}}</h2>
+     <h2 id="userName" user='{{obj.user.username}}'> {{obj.user.username}}</h2>
     {% if request.user.is_authenticated   %}
     {% if request.user == obj.user   %}
     {% else   %}
@@ -58,15 +58,17 @@
 
 
 <div ng-controller="postListController">
-<a href="/files/profile/{{obj.user.id}}/">Photos</a>
-{% if request.user.is_authenticated %}
+<a href="/files/profile/{{obj.user.id}}/"><h1>Photos </h1></a>
 
-<form class ="post-form" ng-submit="AddPost({{obj.id}})" enctype="multipart/form-data" postType='user' fileType='post'>
-     {{post_form.as_p}}
-    <input  type="file" name="file" class="form-control"  onChange="angular.element(this).scope().onPostFileChange(this.files)" accept="image/*" id="id_image">
+ {% if request.user.is_authenticated and request.user == obj.user  %}
+   
 
-    <input type="submit" class="btn btn-primary btn-large" value="Post">
-</form>
+    <form class ="post-form" ng-submit="AddPost({{obj.id}})" enctype="multipart/form-data" postType='user' fileType='post'>
+         {{post_form.as_p}}
+        <input  type="file" name="file" class="form-control"  onChange="angular.element(this).scope().onPostFileChange(this.files)" accept="image/*" id="id_image">
+
+        <input type="submit" class="btn btn-primary btn-large" value="Post">
+    </form>
     
 
     {% endif %}

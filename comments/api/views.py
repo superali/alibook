@@ -10,6 +10,7 @@ User=get_user_model()
 from posts.models import Post
 from comments.models import Comment
 from pages.models import Page
+from files.models import Picture
 from clubs.models import Group
 from .serializers import CommentModelSerializer
 from .pagination import StandardResultsPagination
@@ -19,15 +20,14 @@ class CommentCreateAPIView(generics.CreateAPIView):
     serializer_class = CommentModelSerializer
     permissions_classes = [permissions.IsAuthenticated]
     
-    
     def perform_create(self,serializer): 
         op =  self.kwargs.get('op')
         pk =  self.kwargs.get('pk')
         if op =='comment':
-            print(op)
             content_type=ContentType.objects.get_for_model(Post)
+        elif op =='commentpicture':
+            content_type=ContentType.objects.get_for_model(Picture)
         else:
-            print(op)
             content_type=ContentType.objects.get_for_model(Comment)
 
         serializer.save(user= self.request.user,content_type=content_type,object_id=pk )
@@ -42,7 +42,11 @@ class LikeToggleView(APIView):
         comment=Comment.objects.get(pk=pk)
         if request.user.is_authenticated:
             is_liked= Comment.objects.like_toggle(request.user,comment)
-            create_action(request.user,'likes',comment)
+            url='/posts/'+str(comment.content_object.pk)+'/'
+            if is_liked :
+                create_action(request.user,'Liked a comment',url,comment)
+            else :
+                create_action(request.user,'Unliked a comment',url,comment)
 
             return Response({'liked':is_liked})
         return Response(None,status=400) 
@@ -71,6 +75,9 @@ class CommentListAPIView(generics.ListAPIView):
             queryset=Comment.objects.filter(content_type=content_type,object_id=pk)
         elif op=='reply':
             content_type=ContentType.objects.get_for_model(Comment)
+            queryset=Comment.objects.filter(content_type=content_type,object_id=pk)
+        elif op=='commentpicture':
+            content_type=ContentType.objects.get_for_model(Picture)
             queryset=Comment.objects.filter(content_type=content_type,object_id=pk)
 
         else:

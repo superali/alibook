@@ -44,12 +44,10 @@ urlpatterns = [
     path('',views.Home.as_view(),name='home'),
     path('temp/',TemplateView.as_view(template_name='ang/home.html')),
     url(r'api/templates/(?P<name>[A-Za-z0-9\_\-\.\/]+)/(?P<item>[A-Za-z0-9\_\-\.\/]+)\.html$',AngularTemplateView.as_view()),
-
-
 ]
-#if settings.DEBUG :
+if settings.DEBUG :
 #    import debug_toolbar
-#    urlpatterns +=static(settings.STATIC_URL,document_root=settings.STATIC_ROOT)    
-#    urlpatterns +=static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
-#    #urlpatterns +=url(r'^__debug__/',include(debug_toolbar.urls)),
-#    
+    urlpatterns +=static(settings.STATIC_URL,document_root=settings.STATIC_ROOT)    
+    urlpatterns +=static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
+   #urlpatterns +=url(r'^__debug__/',include(debug_toolbar.urls)),
+    

@@ -91,11 +91,21 @@
 							</ul>
 							<ul class="nav navbar-nav navbar-right">
 							  <li class="dropdown">
-								<a href="#" class="right-list dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-user"></i></a>
-								<ul class="dropdown-menu">
-                                     {% verbatim %} 
+								<a href="#" class="right-list dropdown-toggle" data-toggle="dropdown">
+                                    <i class="glyphicon glyphicon-globe"></i> ({{actions.count}})</a>
+								<ul class="dropdown-menu">   
+                                      {% for action in actions %} 
+								  <li ><a href="{{action.url}}">{{action.user.username}} {{action.verb}} {{action.content_object}} {{action.created|timesince}}</a></li>			
+                                    
+ 
+   
+                                     {% endfor %} 
+                                            
+<!--
+                                    {% verbatim %} 
 								  <li ng-repeat="action in actionList"><a href="">{{action.user.username}} {{action.verb}} {{action.created}}</a></li>
                                      {% endverbatim %} 
+-->
 
 								</ul>
 							  </li>
@@ -103,9 +113,11 @@
                          
                              <ul class="nav navbar-nav navbar-right">
 							  <li class="dropdown">
-								<a href="#" class="right-list dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-inbox"></i></a>
+                                   {% verbatim %} 
+								<a href="#" class="right-list dropdown-toggle" data-toggle="dropdown">
+                                   <i class="glyphicon glyphicon-envelope"></i>  ({{messageList.length}})</a>
 								<ul class="dropdown-menu">
-                                     {% verbatim %} 
+                                    
 								  <li ng-repeat="msg in messageList"><a href="/inbox">  {{msg.from_user.username}}  sent you a message {{msg.created}}</a></li>
                                      {% endverbatim %} 
 								</ul>
@@ -166,6 +178,8 @@
          </form></div>
        <!-- /.modal --></div>
          </div>
+         
+
          </div>
         
           {% if messages %}
@@ -178,7 +192,7 @@
 					</h1>
 
 		{% endif %}
-   </div>
+   </div> 
     <div ng-view></div>
 <!--
         {% block content %} 

@@ -5,8 +5,67 @@
 <div class="container" ng-controller="photoController">
     
     <div class="row">
-        <div class="col-xs-4">
+    <div class="col-xs-12">
+         {% verbatim %} 
+        <div class="modal fade" id="photoModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"> 
+        <div class="modal-dialog"> 
+            <div class="modal-content">
+                 <div class="modal-body">
+                    <img src="{{photo.image}}" class="show-img">
+                                       
+                 </div>
+                <form  >
+ 
+                   <a  href='#' ng-click='likePicture("api/files/",  photo.id  )'><span id="likeBtn"> {{photo.verb_like}}</span> ({{photo.likes}})</a>
+
+                    <a href="#" id="comments" ng-click="get_comments(photo.id,'commentpicture')">comments ({{photo.comment_count}})</a>
+
+                    <div class="modal-footer">
+                      <ul class="list-group"  >
+                          <li class="list-group-item" ng-repeat="c in c[photo.id]">
+
+                           <h4> {{c.content}} </h4><br/>
+                            via <a href="/accounts/{{c.user.username}}"> {{c.user.username}}</a> | <a  href='#' ng-click='likePicture("api/comments/",c.id)'><span id="commentLike{{c.id}}"> {{c.verb_like}}</span>({{c.likes}})</a>
+                             <a href="#" id="replies" ng-click="get_comments(c.id,'reply')">replies ({{c.comment_count}})</a>
+
+                            <ul class="list-group" >
+                              <li class="list-group-item" ng-repeat="r in reply[c.id]">
+                            <h5> {{r.content}}</h5> |
+                            via <a href="/accounts/{{r.user.username}}"> {{r.user.username}}</a> | <a  href='#' ng-click='likePicture("api/comments/",r.id)'><span id="commentLike{{r.id}}"> {{r.verb_like}}</span>({{r.likes}})</a>                 
+
+                                </li>
+
+                         <a href="#" ng-click="get_comments(c.id,'reply')" style="display: none" id="rloadmore{{c.id}}" >Load More</a>
+
+                               
+                         <input class="replyInput" type="text" name="content" ng-model="comment[c.id].content">
+
+                        <a class="btn btn-primary" href="#" ng-click="AddComment(c.id,'reply' )">Reply</a>
+                           </ul>
+
+
+                         </li>
+
+                         <a href="#" ng-click="get_comments(o.id,'commentpicture')" style="display: none" id="cloadmore{{photo.id}}" >Load More</a>
+
+                      <form class="comment-form" ng-submit="AddComment(photo.id,'commentpicture' )">
+                    <input class="form-control commentInput" type="text" name="content" ng-model="comment[photo.id].content">
+                      <input type="submit" class="btn btn-primary " value="Comment">
+
+                     </form>
+                     </ul>
+                    </div>  
+                </form>
+            </div>
+       </div>
+     </div>
+     </div>
+         {% endverbatim %} 
+        <div class="col-sm-4">
             <a href="#"  ng-click="get_photos('profile',{{user.pk}})">Profile Photos</a>
+        </div>          
+        <div class="col-sm-4">
+            <a href="#"  ng-click="get_photos('all',{{user.pk}})">All Photos</a>
         </div>       
  
 

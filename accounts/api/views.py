@@ -22,8 +22,6 @@ class LoginView(APIView):
         print(request.data)
         user = authenticate(username=username, password=password,request=request)
         if user:
-           print(user)
-           print('ussser')
            return Response({"token": user.auth_token.key })
         else:
            return Response({"error": "Wrong Credentials"}, status=status.HTTP_400_BAD_REQUEST)
@@ -37,7 +35,8 @@ class UserFollowView(APIView):
 
             else:
                  followStatus='Follow'
-            create_action(request.user,followStatus+'ed You',toggle_user)
+            url='accounts/'+toggle_user.username+'/'
+            create_action(request.user,followStatus+'ed You',url,toggle_user)
 
             return Response({'followStatus':followStatus})
         return Response(None,status=400) 

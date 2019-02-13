@@ -21,6 +21,14 @@ from .pagination import StandardResultsPagination
 
 from actions.utils import create_action
     
+class PostDetail(generics.ListAPIView):
+    serializer_class = PostModelSerializer
+    permissions_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self,*args,**kwargs):
+        post_id=self.kwargs.get("pk")
+        qs= Post.objects.filter(pk=post_id)
+        return qs     
 class PostCreateAPIView(generics.CreateAPIView):
     serializer_class = PostModelSerializer
     permissions_classes = [permissions.IsAuthenticated]
@@ -52,7 +60,13 @@ class LikeToggleView(APIView):
         post=Post.objects.filter(pk=pk).first()
         if request.user.is_authenticated:
             is_liked= Post.objects.like_toggle(request.user,post)
-            create_action(request.user,'likes',post)
+            if is_liked:
+                url='/posts/'+str(post.pk)+'/'
+                create_action(request.user,'liked a post',url,post)
+            else:
+                url='/posts/'+str(  post.pk)+'/'
+                create_action(request.user,'Unliked a post',url,post) 
+            print(url)
             return Response({'liked':is_liked})
         return Response(None,status=400) 
 
@@ -96,8 +110,6 @@ class PostListAPIView(generics.ListAPIView):
             content_type=ContentType.objects.get_for_model(Group)
             queryset=Post.objects.filter(content_type=content_type,object_id=pk)
         elif op=='home':
-            friends= self.request.user.profile.friends.all().values('user_id')
-
             content_type=ContentType.objects.get_for_model(User)
             queryset=Post.objects.filter(content_type=content_type) 
 
