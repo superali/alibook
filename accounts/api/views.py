@@ -1,14 +1,17 @@
 from rest_framework.views import APIView
 from rest_framework import generics
+from rest_framework.authtoken.models import Token
+from rest_framework.authentication   import TokenAuthentication
+from rest_framework import exceptions
 
 from rest_framework.response import Response
 from accounts.models import Profile
 from django.shortcuts import get_object_or_404
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model,login,logout
 from actions.utils import create_action
 User=get_user_model()
 from django.contrib.auth import authenticate
-from .serializers import UserSerializer
+from .serializers import UserSerializer,LoginSerializer
 class SignupView(generics.CreateAPIView):
     permission_classes = ()
     serializer_class = UserSerializer
@@ -19,12 +22,49 @@ class LoginView(APIView):
     def post(self, request):
         username = request.data.get("username")
         password = request.data.get("password")
-        print(request.data)
-        user = authenticate(username=username, password=password,request=request)
-        if user:
-           return Response({"token": user.auth_token.key })
+        print(username)
+        print(password)
+        if username and password :
+            user = authenticate(username=username, password=password,request = request)
+            print(user)
+            if user:
+                if user.is_active:
+                    pass
+                else:
+                    msg='account deactivated'
+                    raise exceptions.ValidationError(msg)
+            else:
+                msg='unable to login with given credintials'
+                raise exceptions.ValidationError(msg)
         else:
-           return Response({"error": "Wrong Credentials"}, status=status.HTTP_400_BAD_REQUEST)
+            msg='Must provide both username and password'
+            raise exceptions.ValidationError(msg)
+        login(request,user)
+        token,cr=Token.objects.get_or_create(user=user)
+        return Response({"token":token.key},status=200)
+
+    
+class LogoutView(APIView):
+    authentication_classes = (TokenAuthentication,)
+    def post(self, request):
+        request.user.auth_token.delete()
+        logout(request)
+
+        return Response( status=204)
+ 
+    
+#class LoginView(APIView):
+#    authentication_classes = ()
+#    permission_classes = ()
+#    def post(self, request):
+#        username = request.data.get("username")
+#        password = request.data.get("password")
+#        user = authenticate(username=username, password=password,request=request)
+#        if user:
+#           return Response({"token": user.auth_token.key })
+#        else:
+#           return Response({"error": "Wrong Credentials"}, status=status.HTTP_400_BAD_REQUEST)
+#    
 class UserFollowView(APIView):
     def get(self,request,username,*args,**kwargs):
         toggle_user = get_object_or_404(User,username=username)

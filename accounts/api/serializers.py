@@ -1,8 +1,33 @@
 from django.contrib.auth import get_user_model
 from django.urls import reverse_lazy
+from django.contrib.auth import authenticate
+
 from rest_framework import serializers
+from rest_framework import exceptions
 from rest_framework.authtoken.models import Token
 User= get_user_model()
+class LoginSerializer(serializers.Serializer):
+    username=serializers.CharField()
+    password=serializers.CharField()
+    
+    def validate(self,re,data ):
+        username = data.get("username","")
+        password = data.get("password","")
+        if username and password :
+            user = authenticate(username=username, password=password,request = re)
+            if user:
+                if user.is_active:
+                    data['user']=user
+                else:
+                    msg='account deactivated'
+                    raise exceptions.validationError(msg)
+            else:
+                msg='unable to login with given credintials'
+                raise exceptions.validationError(msg)
+        else:
+            msg='Must provide both username and password'
+            raise exceptions.validationError(msg)
+        return data
 class UserSerializer(serializers.ModelSerializer):
      class Meta:
          model = User

@@ -7,12 +7,17 @@ from django.core.cache import cache
 from django.shortcuts import get_object_or_404
 from clubs.models import Group
 from django.contrib.auth import get_user_model
-
+from django.contrib.auth.models import AbstractUser
 User=get_user_model()
 
 def upload_Profile_image(instance,filename):
     return "profile/{user}/{profile}/{filename}".format(user=instance.user.username,profile=instance.profile.id,filename=filename)
-
+#class User(AbstractUser):
+#    username = models.CharField(max_length=40, unique=True)
+#    email = models.EmailField(max_length=40, unique=True)
+# 
+    #    USERNAME_FIELD = 'identifier'
+    #    EMAIL_FIELD = 'identifier2'
 class ProfileManager(models.Manager):
     def all(self):
         qs=self.get_queryset().all()

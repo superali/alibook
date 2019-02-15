@@ -80,28 +80,41 @@ app.config(function($routeProvider,$locationProvider){
         }
          ,
      })
-})
+}).run(function($cookies, $rootScope, $http) {
+  	if ($cookies.get('token')) {
+      $http.defaults.headers.common['Authorization'] = 'Token ' + $cookies.get('token');
+    } else {
+        $("#loginModal").modal('show')    }
+  });
+
+app.config([
+    '$httpProvider',function($httpProvider){
+        $httpProvider.defaults.xsrfCookieName = 'csrftoken';
+        $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
+        
+    }
+]);
 
 var getUrl =window.location;   
 
 var getBaseUrl =getUrl.protocol+"//"+getUrl.host+"/"+getUrl.pathname.split('/')[0];   
-
-function getCookie(name) {
-var cookieValue = null;
-if (document.cookie && document.cookie !== '') {
-var cookies = document.cookie.split(';');
-for (var i = 0; i < cookies.length; i++) {
-var cookie = jQuery.trim(cookies[i]);
-// Does this cookie string begin with the name we want?
-if (cookie.substring(0, name.length + 1) === (name + '=')) {
-cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-break;
-}
-}
-}
-return cookieValue;
-}
-var csrftoken = getCookie('csrftoken');
+//
+//function getCookie(name) {
+//var cookieValue = null;
+//if (document.cookie && document.cookie !== '') {
+//var cookies = document.cookie.split(';');
+//for (var i = 0; i < cookies.length; i++) {
+//var cookie = jQuery.trim(cookies[i]);
+//// Does this cookie string begin with the name we want?
+//if (cookie.substring(0, name.length + 1) === (name + '=')) {
+//cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+//break;
+//}
+//}
+//}
+//return cookieValue;
+//}
+//var csrftoken = getCookie('csrftoken');
 
 app.service('searchService',[function(){
     this.searchList=[];
@@ -109,6 +122,7 @@ app.service('searchService',[function(){
     this.searchListGroup=[];
     this.searchListPost=[];
     this.messageList=[];
+    this.loggedIn=false;
     
 }])
 app.controller('searchController',['$scope','searchService','$cookies','$location','$http','$rootScope',function($scope,searchService,$cookies,$location,$http,$rootScope){
@@ -131,7 +145,6 @@ app.controller('postDetailController',['$scope','searchService','$cookies','$loc
             {
             method:"GET",
             url:url,
-             headers:{"X-CSRFToken":csrftoken},
             }
              ).then(
             function(response){
@@ -153,6 +166,7 @@ app.controller('inboxController',['$scope','searchService','$cookies','$location
 //        $scope.messageList= searchService.messageList;
     var requestUser;
 
+     $scope.loggedIn=searchService.loggedIn;
      $scope.conversation=[];
      $scope.to_userID;
       $scope.to_userName='';
@@ -164,7 +178,6 @@ app.controller('inboxController',['$scope','searchService','$cookies','$location
             {
             method:"GET",
             url:url,
-             headers:{"X-CSRFToken":csrftoken},
             }
              ).then(
             function(response){
@@ -195,7 +208,6 @@ app.controller('inboxController',['$scope','searchService','$cookies','$location
             {
             method:"GET",
             url:url,
-             headers:{"X-CSRFToken":csrftoken},
             }
              ).then(
             function(response){
@@ -209,8 +221,9 @@ app.controller('inboxController',['$scope','searchService','$cookies','$location
         ) 
 
         };
+    if($scope.loggedIn){ 
      $scope.get_conversations()
-    
+    }
     $scope.message={};
     $scope.sendMessage=function(pk=0){
         var url='/api/chat/create/'+pk+'/'
@@ -221,7 +234,6 @@ app.controller('inboxController',['$scope','searchService','$cookies','$location
             method:"POST",
             url:url,
             data:$scope.message,
-            headers:{"X-CSRFToken":csrftoken},
               }
              ).then(
             function(response){
@@ -243,17 +255,22 @@ app.controller('inboxController',['$scope','searchService','$cookies','$location
 }]);
 
 app.controller('rightController',['$scope','$cookies','$location','$http','$rootScope',function($scope,$cookies,$location,$http,$rootScope){
+        var currentUserNameContainer= angular.element(document.querySelector("call"));
+    $scope.currentUserName =currentUserNameContainer.attr('username')
+   if ($scope.currentUserName == $cookies.get("username")){
+       $scope.owner=true;
+   }else{
+       $scope.owner=false;
+
+   }
     $scope.message={};
     $scope.sendMessage=function(pk=0){
         var url='/api/chat/create/'+pk+'/'
-
-        console.log(url)
         $http(
             {
             method:"POST",
             url:url,
             data:$scope.message,
-            headers:{"X-CSRFToken":csrftoken},
               }
              ).then(
             function(response){
@@ -291,43 +308,111 @@ app.controller('headerController',['$scope','searchService','$cookies','$locatio
         });
         $scope.$watch('messageList',function(){
             searchService.messageList=$scope.messageList;
+        });        
+        $scope.$watch('loggedIn',function(){
+            searchService.loggedIn=$scope.loggedIn;
+            if($scope.loggedIn ==true){
+                 $scope.get_messages();
+             $scope.loggedInUsername =$cookies.get("username");
+
+            }else{         $scope.loggedInUsername =$cookies.remove("username");
+
+            }
         });
         $scope.actionList;
         $scope.user={};
         $scope.signup={};
-        var tokenExists= $cookies.get("token")
-        if(tokenExists){
+
          //verify token
-         $scope.loggedIn=true;
-         $cookies.remove("token")
-         $scope.user.username=$cookies.get("username")
+         $scope.loggedIn=false;
+         $scope.loggedInUsername =$cookies.get("username");
+        var tokenExists = $cookies.get("token")
+        if(tokenExists){
+            $scope.loggedIn=true;
         }
-        $scope.login=function(){
+        $scope.login=function(user){
              var url='/api/accounts/login/'
-             
-             $http(
+              $http(
                  {
                  method:"POST",
                  url:url,
                  data:$scope.user,
-//                  headers:{"X-CSRFToken":csrftoken},
                  }
                   ).then(
                  function(response){
+                  console.log(response)
                   $cookies.put("token",response.data.token)
-                  $cookies.put("username",$scope.user.username)
+                  $cookies.put("username",user.username)
+                $scope.loggedIn=true;
+                    $("#loginModal").modal('hide')
+
                   $location.path('/')
-                  console.log(response.data.token)
                     },
 
                   function(response){
                      console.log(response)
                   }
 
-             )         
-        };        
+             )
+        }
+        $scope.logout=function(user){
+             var url='/api/accounts/logout/'
+              $http(
+                 {
+                 method:"POST",
+                 url:url,
+                 }
+                  ).then(
+                 function(response){
+                  console.log(response)
+                  $cookies.remove("token")
+                  $cookies.remove("username")
+                $scope.loggedIn=false;
+                  $location.path('/')
+                    },
+
+                  function(response){
+                     console.log(response)
+                  }
+
+             )
+        }
+//        };                $scope.user={};
+//        $scope.signup={};
+//        var tokenExists= $cookies.get("token")
+//        if(tokenExists){
+//         //verify token
+//         $scope.loggedIn=true;
+//         $cookies.remove("token")
+//         $scope.user.username=$cookies.get("username")
+//        }
+//        $scope.login=function(){
+//             var url='/api/accounts/login/'
+//             
+//             $http(
+//                 {
+//                 method:"POST",
+//                 url:url,
+//                 data:$scope.user,
+////                  headers:{"X-CSRFToken":csrftoken},
+//                 }
+//                  ).then(
+//                 function(response){
+//                  $cookies.put("token",response.data.token)
+//                  $cookies.put("username",$scope.user.username)
+//                  $location.path('/')
+//                  console.log(response.data.token)
+//                    },
+//
+//                  function(response){
+//                     console.log(response)
+//                  }
+//
+//             )         
+//        };        
        $scope.registerUser=function(){
              var url='/api/accounts/signup/'
+             console.log($scope.signup)
              if($scope.signup.password1 ==$scope.signup.password2 ){
                    $scope.signup.password =$scope.signup.password2;
              
@@ -336,11 +421,12 @@ app.controller('headerController',['$scope','searchService','$cookies','$locatio
                       method:"POST",
                       url:url,
                       data:$scope.signup,
-                       headers:{"X-CSRFToken":csrftoken},
                       }
                        ).then(
                       function(response){
                           console.log(response.data)
+                        $("#signupModal").modal('hide')
+                            $location.path('/')
                          },
 
                        function(response){
@@ -365,7 +451,6 @@ app.controller('headerController',['$scope','searchService','$cookies','$locatio
             {
             method:"GET",
             url:url,
-             headers:{"X-CSRFToken":csrftoken},
             }
              ).then(
             function(response){
@@ -401,7 +486,6 @@ app.controller('headerController',['$scope','searchService','$cookies','$locatio
             {
             method:"GET",
             url:url,
-             headers:{"X-CSRFToken":csrftoken},
             }
              ).then(
             function(response){
@@ -426,7 +510,6 @@ app.controller('headerController',['$scope','searchService','$cookies','$locatio
             {
             method:"GET",
             url:url,
-             headers:{"X-CSRFToken":csrftoken},
             }
              ).then(
             function(response){
@@ -440,7 +523,7 @@ app.controller('headerController',['$scope','searchService','$cookies','$locatio
         ) 
 
         };
-     $scope.get_messages()
+    
 
     
 }]);
@@ -459,7 +542,6 @@ console.log(url)
         method:"POST",
         url:url,
         data:$scope.comment[pk],
-        headers:{"X-CSRFToken":csrftoken},
           }
          ).then(
         function(response){
@@ -620,7 +702,6 @@ app.controller('adminListController',['$scope', '$location',  '$resource','$http
     
     $scope.ToggleAdmin=function(username){
         var name = username;
-        console.log(username)
         if(! username){
             name=$scope.pageAdmin.username;
         }
@@ -638,7 +719,6 @@ app.controller('adminListController',['$scope', '$location',  '$resource','$http
         method:"GET",
         url:url,
         data:$scope.pageAdmin,
-//        headers:{"X-CSRFToken":csrftoken},
           }
          ).then(
         function(response){
@@ -664,11 +744,18 @@ app.controller('adminListController',['$scope', '$location',  '$resource','$http
     };
 }]);
 
-app.controller('leftSideController',['$scope', '$location', '$resource','$http',function($scope, $location,$resource,$http){
+app.controller('leftSideController',['$scope', '$cookies','$location', '$resource','$http',function($scope,$cookies, $location,$resource,$http){
 
     $scope.files=[]; 
- $scope.currentUserName= angular.element(document.querySelector("#userName")).attr('user')
-   
+    
+    $scope.owner=false;
+ $scope.currentUserName= angular.element(document.querySelector("call")).attr('username')
+   if ($scope.currentUserName == $cookies.get("username")){
+       $scope.owner=true;
+   }else{
+       $scope.owner=false;
+
+   }
     
     $scope.onFileChange = function(files){
          $scope.files=files;
@@ -690,7 +777,7 @@ app.controller('leftSideController',['$scope', '$location', '$resource','$http',
 
             $http.post(url,formData,{
                        withCredentials:true,
-                       headers:{"X-CSRFToken":csrftoken,'Content-Type':undefined},
+                       headers:{'Content-Type':undefined},
                        transformRequest:angular.identity,
                        }).then(
                         function(response){
@@ -722,7 +809,6 @@ app.controller('leftSideController',['$scope', '$location', '$resource','$http',
         {
         method:"GET",
         url:url,
-        headers:{"X-CSRFToken":csrftoken},
           }
          ).then(
         function(response){
@@ -756,7 +842,6 @@ $scope.followStatus= angular.element(document.querySelector("#followStatus")).at
             {
             method:"GET",
             url:url,
-            headers:{"X-CSRFToken":csrftoken},
               }
              ).then(
             function(response){
@@ -793,7 +878,6 @@ app.controller('pageCreateController',['$scope', '$resource','$http',function($s
         method:"POST",
         url:url,
         data:$scope.page,
-        headers:{"X-CSRFToken":csrftoken},
           }
          ).then(
         function(response){
@@ -912,30 +996,38 @@ app.controller('pageListController',['$scope', '$resource','$http',function($sco
     )}};
     $scope.get_pages();
 }])
-app.controller('postListController',['$scope','$cookies', '$resource','$http',function($scope,$cookies, $resource,$http){
+app.controller('postListController',['$scope','searchService','$cookies', '$resource','$http',function($scope,searchService,$cookies, $resource,$http){
+    var currentUserNameContainer= angular.element(document.querySelector("call"));
+    $scope.currentUserName =currentUserNameContainer.attr('username')
+   if ($scope.currentUserName == $cookies.get("username")){
+       $scope.owner=true;
+   }else{
+       $scope.owner=false;
+
+   }     
+
         $scope.postDetail;
         var postID=angular.element(document.querySelector("post"));
         $scope.postPk =postID.attr('pk');
         $scope.get_post= function(){
                 var url='/api/posts/'+$scope.postPk+'/'
 
-        $http(
-            {
-            method:"GET",
-            url:url,
-             headers:{"X-CSRFToken":csrftoken},
-            }
-             ).then(
-            function(response){
-                 console.log(response.data)
-                $scope.postDetail=response.data[0];
-               },
+                $http(
+                    {
+                    method:"GET",
+                    url:url,
+                    }
+                     ).then(
+                    function(response){
+                         console.log(response.data)
+                        $scope.postDetail=response.data[0];
+                       },
 
-             function(response){
-                console.log(response)
-             }
+                     function(response){
+                        console.log(response)
+                     }
 
-        ) 
+                ) 
         };
    
     
@@ -957,7 +1049,7 @@ app.controller('postListController',['$scope','$cookies', '$resource','$http',fu
 
             $http.post(url,formData,{
                        withCredentials:true,
-                       headers:{"X-CSRFToken":csrftoken,'Content-Type':undefined},
+                       headers:{'Content-Type':undefined},
                        transformRequest:angular.identity,
                        }).then(
                         function(response){
@@ -994,7 +1086,6 @@ app.controller('postListController',['$scope','$cookies', '$resource','$http',fu
         method:"POST",
         url:url,
         data:$scope.post,
-        headers:{"X-CSRFToken":csrftoken},
           }
          ).then(
         function(response){
@@ -1099,7 +1190,6 @@ app.controller('postListController',['$scope','$cookies', '$resource','$http',fu
         method:"POST",
         url:url,
         data:$scope.comment[pk],
-        headers:{"X-CSRFToken":csrftoken},
           }
          ).then(
         function(response){
@@ -1195,7 +1285,6 @@ app.controller('postListController',['$scope','$cookies', '$resource','$http',fu
            "op":op,
            "pk":pk,
                  },
-           headers:{"Authorization":$cookies.get("token")},
            
           }).then(
         function(response){
@@ -1219,6 +1308,19 @@ app.controller('postListController',['$scope','$cookies', '$resource','$http',fu
             $scope.get_data();
 
     }
+$scope.loggedIn=searchService.loggedIn;
+    $scope.$watch('loggedIn',function(){
+            searchService.loggedIn=$scope.loggedIn;
+            if($scope.loggedIn ==true){
+ 
+    if($scope.postPk){
+         $scope.get_post();
+    }else{
+            $scope.get_data();
+
+    }
+            }
+        });
 
 }]);
 

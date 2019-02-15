@@ -46,53 +46,53 @@ class AngularTemplateView(View):
                                                   'friends':friends,
                                                  })
         elif item=='profile':
-            try:
-                if self.request.user.is_authenticated:
-                    user=User.objects.get(username=name)
-                    obj=user.profile
-                    friends=user.profile.friends.all()
-                    sent_frequests=FriendRequest.objects.filter(from_user= user)
-                    res_frequests=FriendRequest.objects.filter(to_user= user)
-                    status='None'
-                    op='None'
-                    if FriendRequest.objects.filter(from_user=self.request.user,to_user=user):
-                        status='Cancel Friend Request'
-                        op='cancel'
-                    elif FriendRequest.objects.filter(to_user=self.request.user,from_user=user):
-                        status='Confirm Friend Request'
-                        op='confirm'
-                    elif self.request.user.profile in friends:
-                        status='UnFriend'
-                        op='delete'
-                    else :
-                        status='Add Friend'
-                        op='send'
-                    if self.request.user.profile in user.followed_by.all():
-                        followStatus="Unfollow"
-                    else:
-                         followStatus="Follow"
+#            try:
+#                if self.request.user.is_authenticated:
+            user=User.objects.get(username=name)
+            obj=user.profile
+            friends=user.profile.friends.all()
+            sent_frequests=FriendRequest.objects.filter(from_user= user)
+            res_frequests=FriendRequest.objects.filter(to_user= user)
+            status='None'
+            op='None'
+            if FriendRequest.objects.filter(from_user= request.user,to_user=user):
+                status='Cancel Friend Request'
+                op='cancel'
+            elif FriendRequest.objects.filter(to_user= request.user,from_user=user):
+                status='Confirm Friend Request'
+                op='confirm'
+            elif self.request.user.profile in friends:
+                status='UnFriend'
+                op='delete'
+            else :
+                status='Add Friend'
+                op='send'
+            if request.user.profile in user.followed_by.all():
+                followStatus="Unfollow"
+            else:
+                 followStatus="Follow"
 
-                    return render(request,final_path,{'request':self.request,
-                                                          'post_form':PostCreateForm,
-                                                          'message_form':MessageCreateForm,
-                                                          'status':status,
-                                                          'op':op,
-                                                          'users':users,
-                                                          'friends':friends,
-                                                          'sent_frequests':sent_frequests,
-                                                          'res_frequests':res_frequests,
-                                                          'obj':obj,
-                                                          'followStatus':followStatus
-                                                         })
-                else:
-                    return render(request,'ang/app/login.html',{'request':self.request,
-                                                          'form':UserLoginForm,
-                                                         })
-            except:
-                return render(request,'ang/app/login.html',{'request':self.request,
-                                                          'form':UserLoginForm,
-                                                         })
-                
+            return render(request,final_path,{'request':request,
+                                                  'post_form':PostCreateForm,
+                                                  'message_form':MessageCreateForm,
+                                                  'status':status,
+                                                  'op':op,
+                                                  'users':users,
+                                                  'friends':friends,
+                                                  'sent_frequests':sent_frequests,
+                                                  'res_frequests':res_frequests,
+                                                  'obj':obj,
+                                                  'followStatus':followStatus
+                                                 })
+#                else:
+#                    return render(request,'ang/app/login.html',{'request':self.request,
+#                                                          'form':UserLoginForm,
+#                                                         })
+#            except:
+#                return render(request,'ang/app/login.html',{'request':self.request,
+#                                                          'form':UserLoginForm,
+#                                                         })
+#                
 
         elif item=='page':
             likePage='Like'

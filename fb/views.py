@@ -10,7 +10,8 @@ from posts.models import Post
 from posts.forms import PostCreateForm
 User=get_user_model()
 
-class Home(LoginRequiredMixin,ListView):
+#class Home(LoginRequiredMixin,ListView):
+class Home(ListView):
     template_name='index.html'
     def get_context_data(self,*args,**kwargs):
         context = super(Home,self).get_context_data(*args,**kwargs)
