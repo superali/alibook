@@ -11,7 +11,20 @@ from django.contrib.auth import get_user_model,login,logout
 from actions.utils import create_action
 User=get_user_model()
 from django.contrib.auth import authenticate
-from .serializers import UserSerializer,LoginSerializer
+from .serializers import UserSerializer,PasswordChangeSerializer
+class ChangePasswordView(generics.CreateAPIView):
+    serializer_class = PasswordChangeSerializer
+
+    def post(self,request,*args,**kwargs):
+
+        user = get_object_or_404(User,username=request.user.username)
+        user.set_password(request.data.get('password'))
+        print('pppppppppppp')
+        print(request.data.get('password'))
+        print(request.data )
+        user.save()
+        return Response({'detail':'Password has been changed'})
+
 class SignupView(generics.CreateAPIView):
     permission_classes = ()
     serializer_class = UserSerializer

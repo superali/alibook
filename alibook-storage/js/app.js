@@ -376,6 +376,38 @@ app.controller('headerController',['$scope','searchService','$cookies','$locatio
                   }
 
              )
+        }        
+        $scope.chpassword={};
+        $scope.changePassword=function(chpassword){
+             var url='/api/accounts/change_password/'
+             if($scope.chpassword.password ==$scope.chpassword.password1){ 
+              console.log($scope.chpassword)
+              console.log($scope.chpassword.password)
+              console.log($scope.chpassword.password1)
+              $http(
+               {
+                 method:"POST",
+                 url:url,
+                 data:$scope.chpassword ,
+                 }
+                  ).then(
+                 function(response){
+                  console.log(response)
+
+                    $("#changePasswordModal").modal('hide')
+
+                  $location.path('/')
+                    },
+
+                  function(response){
+                     console.log(response)
+                  }
+
+             )
+             }else{
+                 $("#changePasswordModal #changePasswordError").text('Passwords Must Match')
+
+             }
         }
 //        };                $scope.user={};
 //        $scope.signup={};
@@ -500,7 +532,7 @@ app.controller('headerController',['$scope','searchService','$cookies','$locatio
         ) 
 
         };
-     $scope.get_actions() 
+//     $scope.get_actions() 
     
     $scope.get_messages=function(pk=0){
 
@@ -1096,6 +1128,48 @@ app.controller('postListController',['$scope','searchService','$cookies', '$reso
             $(".post-form textarea").val("")
             $scope.AddFile(fileType,response.data.id);
             $scope.postList.unshift(response.data)
+
+               
+           },
+
+         function(response){
+            console.log(response)}
+ 
+    ) 
+
+    }; 
+ $scope.editpost={};
+ $scope.getPostPK=function(ppk=0 ){
+  $scope.ppk=ppk;
+ }
+ $scope.editPost=function(pk=0){
+        var url='/api/posts/edit/'+$scope.ppk+'/'
+       
+        var postType=angular.element(document.querySelector(".post-form")).attr('postType');
+        var fileType=angular.element(document.querySelector(".post-form")).attr('fileType');
+
+        if(postType=='user'){
+            url='/api/posts/edit/'+$scope.ppk+'/'
+        }else if(postType=='page'){
+            url="/api/posts/create/page/"+pk+'/'
+        }else if(postType=='group'){
+            url="/api/posts/create/group/"+pk+'/'
+        } 
+
+    $http(
+        {
+        method:"POST",
+        url:url,
+        data:$scope.editpost,
+          }
+         ).then(
+        function(response){
+            
+            if(!$scope.postList){
+               $scope.postList=[] 
+            }
+            $("#editPostModal").modal("hide")
+             $scope.postList.unshift(response.data)
 
                
            },

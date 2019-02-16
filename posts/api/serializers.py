@@ -11,6 +11,11 @@ User=get_user_model()
 from accounts.api.serializers import UserDisplaySerializer
 from files.api.serializers import PictureDisplaySerializer
 
+class PostUpdateModelSerializer(serializers.ModelSerializer):
+        model=Post
+        fields=[
+                 'content', 
+                  ]
 class PostModelSerializer(serializers.ModelSerializer):
     user = UserDisplaySerializer(read_only=True)
     created_at = serializers.SerializerMethodField()

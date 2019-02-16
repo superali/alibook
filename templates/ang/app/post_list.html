@@ -1,10 +1,42 @@
- <div ng-repeat="o in postList">
+ <div class="modal fade" id="editPostModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"> 
+        <div class="modal-dialog"> 
+            <div class="modal-content">
+                <form ng-submit="editPost()" class="form ">
+<!--                <form method="post" action="{% url 'accounts:login' %}"  class="form ">-->
+
+                    <div class="modal-header"> 
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"> &times; </button> 
+                        <h4 class="modal-title" id="myModalLabel"> Edit </h4> 
+                    </div>
+                    <div class="modal-body">
+                        <textarea name="content" ng-model="editpost.content" placeholder="New Content"></textarea>
+                         <input type="submit" class="btn btn-primary" value='Change'>   
+                    </div>
+                    <div class="modal-footer">
+                          <h2 class="alert" id="changePasswordError"></h2> 
+                    </div> 
+                </form>
+            </div>
+       <!-- /.modal -->
+       </div>
+    </div>
+<div ng-repeat="o in postList">
   
      {% verbatim %} 
   
     <img ng-repeat="im in o.images" class="post-img" src="{{im.image}}" >
+  <ul ng-show="loggedIn" class="nav navbar-nav navbar-right">
+							  <li class="dropdown">
+								<a ng-click="getPostPK(o.id)" href="#" class="right-list dropdown-toggle" data-toggle="dropdown">
+                                    Edit</a>
+								<ul class="dropdown-menu">   
+								  <li ><a href="#"data-toggle="modal" data-target="#editPostModal">edit</a></li>			
+								  <li ><a href="#">delete </a></li>			
+								</ul>
+							  </li>
+</ul>
+  <a href="/posts/{{o.id}}"><h3>{{o.content}} </h3> </a>    						
 
-  <a href="/posts/{{o.id}}"><h3>{{o.content}} </h3> </a>
             
            <br/>
   via <a href="/accounts/{{o.user.username}}"> {{o.user.username}}</a> | <a  href='#' ng-click='likePage("api/posts/",o.id)'><span id="postLike{{o.id}}"> {{o.verb_like}}</span>({{o.likes}})</a>

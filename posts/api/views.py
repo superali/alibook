@@ -13,7 +13,7 @@ from posts.models import Post
 from accounts.models import Profile
 from pages.models import Page
 from clubs.models import Group
-from .serializers import PostModelSerializer
+from .serializers import PostModelSerializer,PostUpdateModelSerializer
 from accounts.api.serializers import UserDisplaySerializer
 from pages.api.serializers import PageModelSerializer
 from clubs.api.serializers import GroupDisplaySerializer
@@ -29,6 +29,9 @@ class PostDetail(generics.ListAPIView):
         post_id=self.kwargs.get("pk")
         qs= Post.objects.filter(pk=post_id)
         return qs     
+class PostEditAPIView(generics.UpdateAPIView):
+    serializer_class = PostUpdateModelSerializer
+
 class PostCreateAPIView(generics.CreateAPIView):
     serializer_class = PostModelSerializer
     permissions_classes = [permissions.IsAuthenticated]
