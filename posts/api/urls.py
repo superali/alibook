@@ -19,7 +19,6 @@ urlpatterns = [
         url(r'^create/page/(?P<pk>\d+)/$', views.PagePostCreateAPIView.as_view(), name='page'),
          url(r'^create/group/(?P<pk>\d+)/$', views.GroupPostCreateAPIView.as_view(), name='group'),
 
-        url(r'^edit/(?P<ppk>\d+)/$', views.PostEditAPIView.as_view(), name='edit'),
 
     
     

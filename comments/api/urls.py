@@ -6,6 +6,7 @@ from .import views
 
 app_name = 'comments'
 urlpatterns = [
+    url(r'^(?P<pk>\d+)/$', views.CommentDetail.as_view(), name='detail'),
 
     url(r'^(?P<op>[\w.@+-]+)/(?P<pk>\d+)$', views.CommentListAPIView.as_view(), name='list'),
 

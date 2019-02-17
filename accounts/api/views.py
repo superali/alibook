@@ -35,11 +35,10 @@ class LoginView(APIView):
     def post(self, request):
         username = request.data.get("username")
         password = request.data.get("password")
-        print(username)
-        print(password)
         if username and password :
             user = authenticate(username=username, password=password,request = request)
-            print(user)
+            if not user:
+                user = authenticate(email=username, password=password,request = request)
             if user:
                 if user.is_active:
                     pass
@@ -65,19 +64,7 @@ class LogoutView(APIView):
 
         return Response( status=204)
  
-    
-#class LoginView(APIView):
-#    authentication_classes = ()
-#    permission_classes = ()
-#    def post(self, request):
-#        username = request.data.get("username")
-#        password = request.data.get("password")
-#        user = authenticate(username=username, password=password,request=request)
-#        if user:
-#           return Response({"token": user.auth_token.key })
-#        else:
-#           return Response({"error": "Wrong Credentials"}, status=status.HTTP_400_BAD_REQUEST)
-#    
+ 
 class UserFollowView(APIView):
     def get(self,request,username,*args,**kwargs):
         toggle_user = get_object_or_404(User,username=username)

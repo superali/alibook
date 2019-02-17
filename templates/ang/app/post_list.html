@@ -1,7 +1,7 @@
  <div class="modal fade" id="editPostModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"> 
         <div class="modal-dialog"> 
             <div class="modal-content">
-                <form ng-submit="editPost()" class="form ">
+                <form ng-submit="editPost('post')" class="form ">
 <!--                <form method="post" action="{% url 'accounts:login' %}"  class="form ">-->
 
                     <div class="modal-header"> 
@@ -9,12 +9,50 @@
                         <h4 class="modal-title" id="myModalLabel"> Edit </h4> 
                     </div>
                     <div class="modal-body">
-                        <textarea name="content" ng-model="editpost.content" placeholder="New Content"></textarea>
+                        <textarea class="form-control" name="content" ng-model="editpost.content" placeholder="New Content"></textarea>
                          <input type="submit" class="btn btn-primary" value='Change'>   
                     </div>
-                    <div class="modal-footer">
-                          <h2 class="alert" id="changePasswordError"></h2> 
-                    </div> 
+                   
+                </form>
+            </div>
+       <!-- /.modal -->
+       </div>
+    </div> 
+<div class="modal fade" id="editCommentModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"> 
+        <div class="modal-dialog"> 
+            <div class="modal-content">
+                <form ng-submit="editPost('comment')" class="form ">
+<!--                <form method="post" action="{% url 'accounts:login' %}"  class="form ">-->
+
+                    <div class="modal-header"> 
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"> &times; </button> 
+                        <h4 class="modal-title" id="myModalLabel"> Edit </h4> 
+                    </div>
+                    <div class="modal-body">
+                        <textarea  class="form-control" name="content" ng-model="editpost.content" placeholder="New Content"></textarea>
+                         <input type="submit" class="btn btn-primary" value='Change'>   
+                    </div>
+                 
+                </form>
+            </div>
+       <!-- /.modal -->
+       </div>
+    </div>
+<div class="modal fade" id="editReplyModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"> 
+        <div class="modal-dialog"> 
+            <div class="modal-content">
+                <form ng-submit="editPost('reply')" class="form ">
+<!--                <form method="post" action="{% url 'accounts:login' %}"  class="form ">-->
+
+                    <div class="modal-header"> 
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"> &times; </button> 
+                        <h4 class="modal-title" id="myModalLabel"> Edit </h4> 
+                    </div>
+                    <div class="modal-body">
+                        <textarea  class="form-control" name="content" ng-model="editpost.content" placeholder="New Content"></textarea>
+                         <input type="submit" class="btn btn-primary" value='Change'>   
+                    </div>
+             
                 </form>
             </div>
        <!-- /.modal -->
@@ -25,13 +63,13 @@
      {% verbatim %} 
   
     <img ng-repeat="im in o.images" class="post-img" src="{{im.image}}" >
-  <ul ng-show="loggedIn" class="nav navbar-nav navbar-right">
+  <ul ng-if="o.user.username == loggedInUsername" class="nav navbar-nav navbar-right">
 							  <li class="dropdown">
 								<a ng-click="getPostPK(o.id)" href="#" class="right-list dropdown-toggle" data-toggle="dropdown">
                                     Edit</a>
 								<ul class="dropdown-menu">   
 								  <li ><a href="#"data-toggle="modal" data-target="#editPostModal">edit</a></li>			
-								  <li ><a href="#">delete </a></li>			
+								  <li ><a href="#" ng-click="deletePost('post')">delete </a></li>			
 								</ul>
 							  </li>
 </ul>
@@ -44,13 +82,32 @@
 
       <ul class="list-group"  >
           <li class="list-group-item" ng-repeat="c in c[o.id]">
-            
+              <ul ng-if="c.user.username == loggedInUsername" class="nav navbar-nav navbar-right">
+							  <li class="dropdown">
+								<a ng-click="getPostPK(c.id,o.id)" href="#" class="right-list dropdown-toggle" data-toggle="dropdown">
+                                    Edit</a>
+								<ul class="dropdown-menu">   
+								  <li ><a href="#"data-toggle="modal" data-target="#editCommentModal">edit</a></li>			
+								  <li ><a href="#" ng-click="deletePost('comment')">delete </a></li>			
+								</ul>
+							  </li>
+                </ul>
            <h4> {{c.content}} </h4><br/>
             via <a href="/accounts/{{c.user.username}}"> {{c.user.username}}</a> | <a  href='#' ng-click='likePage("api/comments/",c.id)'><span id="commentLike{{c.id}}"> {{c.verb_like}}</span>({{c.likes}})</a>
              |                <a href="#" id="replies" ng-click="get_comments(c.id,'reply')">replies ({{c.comment_count}})</a>
               
             <ul class="list-group" >
               <li class="list-group-item" ng-repeat="r in reply[c.id]">
+                 <ul ng-if="r.user.username == loggedInUsername" class="nav navbar-nav navbar-right">
+                      <li class="dropdown">
+                        <a ng-click="getPostPK(r.id,c.id)" href="#" class="right-list dropdown-toggle" data-toggle="dropdown">
+                            Edit</a>
+                        <ul class="dropdown-menu">   
+                          <li ><a href="#"data-toggle="modal" data-target="#editReplyModal">edit</a></li>			
+                          <li ><a href="#" ng-click="deletePost('comment')">delete </a></li>			
+                        </ul>
+                      </li>
+                </ul>
             <h5> {{r.content}}</h5> |
             via <a href="/accounts/{{r.user.username}}"> {{r.user.username}}</a> | <a  href='#' ng-click='likePage("api/comments/",r.id)'><span id="commentLike{{r.id}}"> {{r.verb_like}}</span>({{r.likes}})</a>                 
  

@@ -1,6 +1,6 @@
 
 from rest_framework.response import Response
-from rest_framework import generics
+from rest_framework import generics,mixins
 from rest_framework import permissions
 from django.contrib.contenttypes.models import ContentType
 from django.core import serializers
@@ -11,6 +11,7 @@ from django.contrib.auth import get_user_model
 User=get_user_model()
 from posts.models import Post
 from accounts.models import Profile
+from accounts.permissions import IsownerOrReadOnly
 from pages.models import Page
 from clubs.models import Group
 from .serializers import PostModelSerializer,PostUpdateModelSerializer
@@ -21,16 +22,18 @@ from .pagination import StandardResultsPagination
 
 from actions.utils import create_action
     
-class PostDetail(generics.ListAPIView):
+class PostDetail(mixins.UpdateModelMixin,mixins.DestroyModelMixin,generics.ListAPIView):
     serializer_class = PostModelSerializer
-    permissions_classes = [permissions.IsAuthenticated]
+    permissions_classes = [IsownerOrReadOnly,]
 
     def get_queryset(self,*args,**kwargs):
         post_id=self.kwargs.get("pk")
         qs= Post.objects.filter(pk=post_id)
-        return qs     
-class PostEditAPIView(generics.UpdateAPIView):
-    serializer_class = PostUpdateModelSerializer
+        return qs  
+    def put(self,request,*args,**kwargs):
+        return self.update(request,*args,**kwargs)
+    def delete(self,request,*args,**kwargs):
+        return self.destroy(request,*args,**kwargs)
 
 class PostCreateAPIView(generics.CreateAPIView):
     serializer_class = PostModelSerializer

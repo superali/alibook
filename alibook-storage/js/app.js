@@ -1031,7 +1031,8 @@ app.controller('pageListController',['$scope', '$resource','$http',function($sco
 app.controller('postListController',['$scope','searchService','$cookies', '$resource','$http',function($scope,searchService,$cookies, $resource,$http){
     var currentUserNameContainer= angular.element(document.querySelector("call"));
     $scope.currentUserName =currentUserNameContainer.attr('username')
-   if ($scope.currentUserName == $cookies.get("username")){
+    $scope.loggedInUsername = $cookies.get("username")
+   if ($scope.currentUserName ==$scope.loggedInUsername ){
        $scope.owner=true;
    }else{
        $scope.owner=false;
@@ -1139,26 +1140,26 @@ app.controller('postListController',['$scope','searchService','$cookies', '$reso
 
     }; 
  $scope.editpost={};
- $scope.getPostPK=function(ppk=0 ){
+ $scope.getPostPK=function(ppk=0 ,parentid=0){
   $scope.ppk=ppk;
+  $scope.parentpk=parentid;
  }
- $scope.editPost=function(pk=0){
-        var url='/api/posts/edit/'+$scope.ppk+'/'
-       
+ $scope.editPost=function(genre){
+     var url;
+     var mymodal;
+        if(genre =='post')
+        {   url='/api/posts/'+$scope.ppk+'/'
+            mymodal ='#editPostModal'
+       }else{
+            url='/api/comments/'+$scope.ppk+'/'
+            mymodal ='#editCommentModal'
+       }
         var postType=angular.element(document.querySelector(".post-form")).attr('postType');
         var fileType=angular.element(document.querySelector(".post-form")).attr('fileType');
 
-        if(postType=='user'){
-            url='/api/posts/edit/'+$scope.ppk+'/'
-        }else if(postType=='page'){
-            url="/api/posts/create/page/"+pk+'/'
-        }else if(postType=='group'){
-            url="/api/posts/create/group/"+pk+'/'
-        } 
-
     $http(
         {
-        method:"POST",
+        method:"PUT",
         url:url,
         data:$scope.editpost,
           }
@@ -1168,9 +1169,45 @@ app.controller('postListController',['$scope','searchService','$cookies', '$reso
             if(!$scope.postList){
                $scope.postList=[] 
             }
-            $("#editPostModal").modal("hide")
+            
+            if(genre =='post'){ 
              $scope.postList.unshift(response.data)
+            }else if(genre =='comment'){
+                 $scope.c[$scope.parentpk].unshift(response.data)
 
+            }else if(genre =='reply'){
+                 $scope.reply[$scope.parentpk].unshift(response.data)
+                 mymodal ='#editReplyModal'
+
+            }
+            $(mymodal).modal("hide")
+               
+           },
+
+         function(response){
+            console.log(response)}
+ 
+    ) 
+
+    }; 
+    $scope.deletePost=function(genre){
+        if(genre =='post')
+        {        var url='/api/posts/'+$scope.ppk+'/'
+       }else{
+            var url='/api/comments/'+$scope.ppk+'/'
+       }       
+        var postType=angular.element(document.querySelector(".post-form")).attr('postType');
+        var fileType=angular.element(document.querySelector(".post-form")).attr('fileType');
+
+    $http(
+        {
+        method:"DELETE",
+        url:url,
+          }
+         ).then(
+        function(response){
+            
+  
                
            },
 
