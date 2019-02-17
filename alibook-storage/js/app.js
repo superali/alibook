@@ -521,8 +521,9 @@ app.controller('headerController',['$scope','searchService','$cookies','$locatio
             }
              ).then(
             function(response){
-                $scope.actionList=response.data.results;
-                 console.log(response)
+                $scope.actionList=response.data;
+                  
+                 console.log(response.data.results)
                },
 
              function(response){
@@ -532,7 +533,7 @@ app.controller('headerController',['$scope','searchService','$cookies','$locatio
         ) 
 
         };
-//     $scope.get_actions() 
+$scope.get_actions() 
     
     $scope.get_messages=function(pk=0){
 

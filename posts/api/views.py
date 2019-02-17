@@ -68,10 +68,10 @@ class LikeToggleView(APIView):
             is_liked= Post.objects.like_toggle(request.user,post)
             if is_liked:
                 url='/posts/'+str(post.pk)+'/'
-                create_action(request.user,'liked a post',url,post)
+                create_action(request.user,'liked a post By',url,post)
             else:
                 url='/posts/'+str(  post.pk)+'/'
-                create_action(request.user,'Unliked a post',url,post) 
+                create_action(request.user,'Unliked a post By',url,post) 
             print(url)
             return Response({'liked':is_liked})
         return Response(None,status=400) 

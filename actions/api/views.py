@@ -40,21 +40,3 @@ class ActionListAPIView(generics.ListAPIView):
         
         
         return actions
-#class ActionListAPIView(APIView):
-#    pagination_class = StandardResultsPagination
-#    permissions_classes = [permissions.IsAuthenticated]
-#
-#    def get(self,request,format=None):
-#
-#        op= self.request.GET.get("op")
-#
-#        pk= self.request.GET.get("pk")
-#        
-#        actions = Action.objects.all().exclude(user=self.request.user)
-#        following_ids = self.request.user.profile.following.values_list('id',flat=True)
-#        if following_ids:
-#            actions=actions.filter(user_id__in=following_ids).select_related('user','user__profile').prefetch_related('content_object')
-#        actions = actions[:10]
-#        data=serializers.serialize('json',Action.objects.all())
-#        return JsonResponse(data,safe=False)       
-##        return actions

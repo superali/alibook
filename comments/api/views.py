@@ -42,6 +42,7 @@ class CommentCreateAPIView(generics.CreateAPIView):
         
         
         
+        
     
 class LikeToggleView(APIView):
     
@@ -52,9 +53,9 @@ class LikeToggleView(APIView):
             is_liked= Comment.objects.like_toggle(request.user,comment)
             url='/posts/'+str(comment.content_object.pk)+'/'
             if is_liked :
-                create_action(request.user,'Liked a comment',url,comment)
+                create_action(request.user,'Liked a comment By',url,comment)
             else :
-                create_action(request.user,'Unliked a comment',url,comment)
+                create_action(request.user,'Unliked a comment By',url,comment)
 
             return Response({'liked':is_liked})
         return Response(None,status=400) 

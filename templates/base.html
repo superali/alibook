@@ -102,22 +102,26 @@
 							  </li>
 							</ul>
 							<ul ng-show="loggedIn" class="nav navbar-nav navbar-right">
-							  <li class="dropdown">
+							  <li class="dropdown"> {% verbatim %}
 								<a href="#" class="right-list dropdown-toggle" data-toggle="dropdown">
-                                    <i class="glyphicon glyphicon-globe"></i> ({{actions.count}})</a>
+                                    <i class="glyphicon glyphicon-globe"></i> ({{actionList.count}})</a>
 								<ul class="dropdown-menu">   
+<!--
                                       {% for action in actions %} 
 								  <li ><a href="{{action.url}}">{{action.user.username}} {{action.verb}} {{action.content_object}} {{action.created|timesince}}</a></li>			
                                     
  
    
                                      {% endfor %} 
-                                            
-<!--
-                                    {% verbatim %} 
-								  <li ng-repeat="action in actionList"><a href="">{{action.user.username}} {{action.verb}} {{action.created}}</a></li>
-                                     {% endverbatim %} 
 -->
+                                            
+                                    
+								  <li ng-repeat="action in actionList.results">
+                                      <a href="{{action.url}}">{{action.user.username}}  {{action.verb}} {{action.content_object}}
+<!--                                          {{action.created}}-->
+                                      </a>
+                                    </li>
+                                     {% endverbatim %} 
 
 								</ul>
 							  </li>

@@ -24,14 +24,12 @@ from .pagination import StandardResultsPagination
 from chat.utils import create_conversation
 class MessageCreateView(generics.CreateAPIView):
     serializer_class = MessageModelSerializer
-    permissions_classes = [permissions.IsAuthenticated]
-    
-    
+
     def perform_create(self,serializer): 
         pk =  self.kwargs.get('pk')
         to_user=User.objects.get(pk=pk)
         serializer.save(to_user= to_user,from_user=self.request.user )
-        create_conversation(self.request.user,to_user)
+        create_conversation(self.request.user,to_user,Message.objects.filter(to_user= to_user,from_user=self.request.user).first())
         
        
 class MessageList(generics.ListAPIView):
