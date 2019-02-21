@@ -29,6 +29,10 @@ class PostDetail(mixins.UpdateModelMixin,mixins.DestroyModelMixin,generics.ListA
     def get_queryset(self,*args,**kwargs):
         post_id=self.kwargs.get("pk")
         qs= Post.objects.filter(pk=post_id)
+        return qs
+    def get_object(self,*args,**kwargs):
+        post_id=self.kwargs.get("pk")
+        qs= Post.objects.get(pk=post_id)
         return qs  
     def put(self,request,*args,**kwargs):
         return self.update(request,*args,**kwargs)

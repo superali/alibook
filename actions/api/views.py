@@ -5,21 +5,19 @@ from django.contrib.contenttypes.models import ContentType
 from django.core import serializers
 from django.http import JsonResponse
 
-from rest_framework.authentication import SessionAuthentication
-from rest_framework import permissions
-
 from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
 User=get_user_model()
  
 from actions.models import Action
+from accounts.permissions import IsownerOrReadOnly
 from .serializers import ActionModelSerializer
 from .pagination import StandardResultsPagination
 
 class ActionListAPIView(generics.ListAPIView):
     serializer_class = ActionModelSerializer
     pagination_class = StandardResultsPagination
-    permissions_classes = [permissions.IsAuthenticated]
+    permissions_classes = (IsownerOrReadOnly,)
    
     def get_serializer_context(self):
         context = super().get_serializer_context()

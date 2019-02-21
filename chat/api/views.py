@@ -22,14 +22,48 @@ from pages.api.serializers import PageModelSerializer
 from clubs.api.serializers import GroupDisplaySerializer
 from .pagination import StandardResultsPagination
 from chat.utils import create_conversation
+
+
+
+class ConversationDeleteAPIView(APIView):
+    
+    def get(self,request,pk,format=None):
+  
+        con=Conversation.objects.get(pk=pk)
+        if con:
+            if not con.from_user_hide =='show' and not con.to_user_hide=='show':
+                con.delete()
+                return Response(None,status=200) 
+            if request.user==con.from_user:
+                con.from_user_hide=request.user.username
+                con.save()
+                return Response({'deleted':con.from_user_hide},status=200) 
+            elif request.user==con.to_use:
+                con.to_user_hide=request.user.username
+                con.save()
+                return Response({'deleted':con.to_user_hide},status=200) 
+
+
+        return Response(None,status=400) 
+
+    
+
 class MessageCreateView(generics.CreateAPIView):
     serializer_class = MessageModelSerializer
 
     def perform_create(self,serializer): 
         pk =  self.kwargs.get('pk')
         to_user=User.objects.get(pk=pk)
-        serializer.save(to_user= to_user,from_user=self.request.user )
-        create_conversation(self.request.user,to_user,Message.objects.filter(to_user= to_user,from_user=self.request.user).first())
+        instance = serializer.save(to_user= to_user,from_user=self.request.user )
+        create_conversation(self.request.user,to_user,instance)
+        
+class MessageDeleteView(generics.DestroyAPIView):
+    serializer_class = MessageModelSerializer
+    def get_queryset(self,*args,**kwargs):
+        m_id=self.kwargs.get("pk")
+        qs= Post.objects.filter(pk=m_id).first()
+        return qs 
+
         
        
 class MessageList(generics.ListAPIView):
@@ -62,10 +96,9 @@ class ConversationListAPIView(generics.ListAPIView):
     def get_queryset(self):
 
         queryset=Conversation.objects.filter((Q(from_user=self.request.user)|
-                                                      Q(to_user=self.request.user)))
-
-
-        return queryset
+                                                      Q(to_user=self.request.user))) 
+        queryset1=queryset.exclude((Q(from_user_hide =self.request.user.username)|  Q(to_user_hide =self.request.user.username)))  
+        return queryset1
 
 class ConversationAPIView(generics.ListAPIView):
     permissions_classes = [permissions.IsAuthenticated]

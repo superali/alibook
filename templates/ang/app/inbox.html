@@ -6,8 +6,9 @@
   <h1>CONVERSATIONS</h1>
   <li ng-repeat=" x in conversationList" class="list-group-item">
 
-       
-  <a href="#" ng-click="get_conversation(x.from_user.username,x.to_user.username)">{{x.to_user.username}}--{{x.from_user.username}}</a>
+    <span class="badge"> <a class="btn " href="#" ng-click="delete_conversation(x.id)">Delete</a></span>   
+  <a class="btn btn-default" href="#" ng-click="get_conversation(x.from_user.username,x.to_user.username)">{{x.to_user.username}}--{{x.from_user.username}}</a>
+    
   </li>
   
  </ul>
@@ -33,6 +34,7 @@
   </li>
  
   <li ng-repeat=" m in conversation" class="list-group-item">
+      <span class="badge"><a class="btn " href="#" ng-click="delete_message(m.id)">Delete</a></span> 
      {{m.from_user.username}} | {{m.created}} <br/> {{m.content}}
   </li>
   

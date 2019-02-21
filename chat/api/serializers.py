@@ -35,9 +35,9 @@ class ConversationModelSerializer(serializers.ModelSerializer):
     class Meta:
         model=Conversation
         fields=[
-                'id','from_user',
+                'id','from_user','from_user_hide',
                 'created',
-                'to_user',
+                'to_user', 'to_user_hide',
                 ]
     
 

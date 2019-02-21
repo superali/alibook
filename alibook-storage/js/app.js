@@ -170,6 +170,47 @@ app.controller('inboxController',['$scope','searchService','$cookies','$location
      $scope.conversation=[];
      $scope.to_userID;
       $scope.to_userName='';
+    $scope.delete_message=function(pk=0){
+       var url='/api/chat/delete/'+pk+'/'
+
+        console.log(url)
+        $http(
+            {
+            method:"DELETE",
+            url:url,
+              }
+             ).then(
+            function(response){
+                console.log(response)
+
+               },
+
+             function(response){
+                console.log(response)}
+
+        ) 
+    }
+    $scope.delete_conversation=function(pk=0){
+        var url='/api/chat/con/delete/'+pk+'/hide/' 
+
+        console.log(pk)
+        
+    $http(
+        {
+        method:"GET",
+        url:url,
+          }
+         ).then(
+        function(response){
+             console.log(response)  
+           },
+
+         function(response){
+            console.log(response)}
+ 
+    ) 
+        
+    }
     $scope.get_conversation=function(fusername,tusername){
 
         var url='/api/chat/conversation/'+fusername+'/'+tusername+'/'

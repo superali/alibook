@@ -43,6 +43,9 @@ class Conversation(models.Model):
     from_user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name='sent_conversatons',db_index=True)    
     to_user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name='rec_conversatons',db_index=True)   
     created = models.DateTimeField(auto_now=True,db_index=True)
+    to_user_hide = models.CharField(max_length = 70,default='show',null=True,blank=True)
+    from_user_hide = models.CharField(max_length = 70,default='show',null=True,blank=True)
+
     messages =   models.ManyToManyField(Message,blank=True,null=True,related_name='messages')
     objects=ConversationManager()
     def __str__(self):
