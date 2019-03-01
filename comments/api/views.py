@@ -2,8 +2,8 @@ from rest_framework.response import Response
 from rest_framework import generics,mixins
 from rest_framework import permissions
 from django.contrib.contenttypes.models import ContentType
+from rest_framework import exceptions
 
-from rest_framework.authentication import SessionAuthentication
 from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
 User=get_user_model()
@@ -15,14 +15,30 @@ from clubs.models import Group
 from .serializers import CommentModelSerializer
 from .pagination import StandardResultsPagination
 from actions.utils import create_action
+from accounts.permissions import IsownerOrReadOnly
+from django.shortcuts import get_object_or_404
 
-class CommentDetail( mixins.DestroyModelMixin,generics.UpdateAPIView):
+class CommentDetail( mixins.DestroyModelMixin,generics.UpdateAPIView,generics.RetrieveAPIView):
+    permissions_classes = [IsownerOrReadOnly,]
+
     serializer_class = CommentModelSerializer
     queryset         = Comment.objects.all()
+
+    
     def put(self,request,*args,**kwargs):
-        return self.update(request,*args,**kwargs)
+        obj = get_object_or_404(self.get_queryset(), pk=self.kwargs["pk"])
+        if obj.user == request.user:
+            return self.update(request,*args,**kwargs)
+        else:
+            raise exceptions.PermissionDenied
+            
     def delete(self,request,*args,**kwargs):
-        return self.destroy(request,*args,**kwargs)
+        obj = get_object_or_404(self.get_queryset(), pk=self.kwargs["pk"])
+        if obj.user == request.user:
+            return self.destroy(request,*args,**kwargs)
+        else:
+            raise exceptions.PermissionDenied
+            
     
 class CommentCreateAPIView(generics.CreateAPIView):
     serializer_class = CommentModelSerializer
@@ -45,7 +61,7 @@ class CommentCreateAPIView(generics.CreateAPIView):
         
     
 class LikeToggleView(APIView):
-    
+       
     def get(self,request,pk,format=None):
   
         comment=Comment.objects.get(pk=pk)

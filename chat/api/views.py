@@ -2,13 +2,16 @@ from django.db.models import Q
 
 
 from rest_framework.response import Response
-from rest_framework import generics
+from rest_framework import generics,mixins
 from rest_framework import permissions
+from rest_framework import exceptions
+
 from django.contrib.contenttypes.models import ContentType
 from django.core import serializers
 from django.http import JsonResponse
-from rest_framework.authentication import SessionAuthentication
 from rest_framework.views import APIView
+from django.shortcuts import get_object_or_404
+
 from django.contrib.auth import get_user_model
 User=get_user_model()
 from posts.models import Post
@@ -56,19 +59,21 @@ class MessageCreateView(generics.CreateAPIView):
         to_user=User.objects.get(pk=pk)
         instance = serializer.save(to_user= to_user,from_user=self.request.user )
         create_conversation(self.request.user,to_user,instance)
-        
-class MessageDeleteView(generics.DestroyAPIView):
+ 
+            
+class MessageDeleteView(mixins.DestroyModelMixin,generics.RetrieveAPIView):
     serializer_class = MessageModelSerializer
-    def get_queryset(self,*args,**kwargs):
-        m_id=self.kwargs.get("pk")
-        qs= Post.objects.filter(pk=m_id).first()
-        return qs 
-
+    queryset         = Message.objects.all() 
+            
+    def delete(self,request,*args,**kwargs):
+        obj = get_object_or_404(self.get_queryset(), pk=self.kwargs["pk"])
+        if (obj.from_user ==  request.user )or(obj.to_user ==  request.user ) :
+            return self.destroy(request,*args,**kwargs)
+        else:
+            raise exceptions.PermissionDenied
         
        
 class MessageList(generics.ListAPIView):
-    permissions_classes = [permissions.IsAuthenticated]
-
     serializer_class = MessageModelSerializer
     pagination_class = StandardResultsPagination
     

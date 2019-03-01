@@ -167,7 +167,7 @@
                         <input type="submit" class="btn btn-primary" value='{% trans "Login" %}'>   
                     </div>
                     <div class="modal-footer">
-                         <a class="btn btn-primary" href="{% url 'accounts:password_reset' %}">
+                         <a class="btn btn-primary" href="/password_reset">
                              {% trans "forgot your password" %}
                          </a> 
                     </div> 
@@ -236,7 +236,7 @@
 					 {% endfor %}
 					</h1>
 
-		{% endif %}
+		{% endif %}  
    </div> 
     <div ng-view></div>
 <!--

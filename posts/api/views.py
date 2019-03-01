@@ -5,8 +5,10 @@ from rest_framework import permissions
 from django.contrib.contenttypes.models import ContentType
 from django.core import serializers
 from django.http import JsonResponse
-from rest_framework.authentication import SessionAuthentication
+from rest_framework import exceptions
 from rest_framework.views import APIView
+from django.shortcuts import get_object_or_404
+
 from django.contrib.auth import get_user_model
 User=get_user_model()
 from posts.models import Post
@@ -35,10 +37,22 @@ class PostDetail(mixins.UpdateModelMixin,mixins.DestroyModelMixin,generics.ListA
         qs= Post.objects.get(pk=post_id)
         return qs  
     def put(self,request,*args,**kwargs):
-        return self.update(request,*args,**kwargs)
-    def delete(self,request,*args,**kwargs):
-        return self.destroy(request,*args,**kwargs)
 
+        obj = get_object_or_404(self.get_queryset(), pk=self.kwargs["pk"])
+        if obj.user == request.user:
+            return self.update(request,*args,**kwargs)
+        else:
+            raise exceptions.PermissionDenied
+            
+    
+    def delete(self,request,*args,**kwargs):
+        obj = get_object_or_404(self.get_queryset(), pk=self.kwargs["pk"])
+        if obj.user == request.user:
+            return self.destroy(request,*args,**kwargs)
+        else:
+            raise exceptions.PermissionDenied
+            
+    
 class PostCreateAPIView(generics.CreateAPIView):
     serializer_class = PostModelSerializer
     permissions_classes = [permissions.IsAuthenticated]

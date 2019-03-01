@@ -7,17 +7,62 @@ from django.core.cache import cache
 from django.shortcuts import get_object_or_404
 from clubs.models import Group
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractBaseUser,BaseUserManager
 User=get_user_model()
 
 def upload_Profile_image(instance,filename):
     return "profile/{user}/{profile}/{filename}".format(user=instance.user.username,profile=instance.profile.id,filename=filename)
-#class User(AbstractUser):
-#    username = models.CharField(max_length=40, unique=True)
-#    email = models.EmailField(max_length=40, unique=True)
-# 
-    #    USERNAME_FIELD = 'identifier'
-    #    EMAIL_FIELD = 'identifier2'
+class UserManager(BaseUserManager):
+    def create_user(self,username,email,password=None,is_active=True,is_staff=False,is_admin=False):
+        if not email:
+            raise ValueError('User must have an email')
+        if not username:
+            raise ValueError('User must have an username') 
+        if not password:
+            raise ValueError('User must have password')
+        user = self.model(
+        email=self.normalize_email(email),
+        username=self.normalize_username(username),
+        )
+        user.set_password(password)
+        user.active=is_active
+        user.admin=is_admin
+        user.staff=is_staff
+        user.save(using=self._db)
+        return user
+    def create_staffuser(self,username,email,password=None):
+        use=self.create_user(email=email,username=username,password=password,is_staff=True)
+        return user
+    def create_superuser(self,username,email,password=None):
+        use=self.create_user(email=email,username=username,password=password,is_staff=True,is_admin=True)
+        return user
+class User(AbstractBaseUser):
+    username = models.CharField(max_length=40, unique=True)
+    email = models.EmailField(max_length=40, unique=True)
+    active  = models.BooleanField(default=True)
+    staff  = models.BooleanField(default=False)
+    admin  = models.BooleanField(default=False)
+    USERNAME_FIELD = 'username'
+    EMAIL_FIELD = 'email'
+    
+    objects=UserManager()
+    def has_perm(self,perm,obj=None):
+        return True
+    
+    def has_module_perms(self,app_label):
+        return True
+    def __str__(self):
+        return self.username
+    
+    @property
+    def is_admin(self):
+        return self.admin    
+    @property
+    def is_active(self):
+        return self.active    
+    @property
+    def is_staff(self):
+        return self.staff
 class ProfileManager(models.Manager):
     def all(self):
         qs=self.get_queryset().all()

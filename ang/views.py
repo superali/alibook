@@ -6,13 +6,13 @@ from django.contrib.contenttypes.models import ContentType
 from django.views.generic import View
 from django.conf import settings
 from django.http import HttpResponse,Http404
+from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth import get_user_model
 
 User=get_user_model()
 
 
 from accounts.models import FriendRequest
-from accounts.forms import UserLoginForm
 from posts.models import Post
 from comments.models import Comment
 from pages.models import Page
@@ -23,6 +23,7 @@ from chat.forms import MessageCreateForm
 from pages.forms import PageCreateForm
 from clubs.forms import GroupCreateForm
 from accounts.forms import UserLoginForm
+from accounts.forms import UserSignUpForm
 
 
 class AngularTemplateView(View):
@@ -158,7 +159,12 @@ class AngularTemplateView(View):
 
         elif item=='inbox':
             return render(request,final_path,{ })
-        
+        elif item=='password_reset':
+            return render(request,final_path,{})
+        elif item=='password_confirm':
+#            return render(request,final_path,{'login_form':UserLoginForm,'signup_form':UserSignUpForm,})
+            return render(request,final_path,{ 'login_form':UserLoginForm,'h':"hhhhhhhhhhhhhhhhhhh",
+                                                 })
         elif item=='post':
             content_type=ContentType.objects.get_for_model(Post)
             post=Post.objects.get(id=name)

@@ -67,6 +67,12 @@ app.config(function($routeProvider,$locationProvider){
             return 'api/templates/'+params.pk +'/photo_list.html';
         }
          ,
+     })      
+    .when('/accounts/:uid/:token',{
+        templateUrl :function(params){
+            return 'api/templates/'+params.uid +'/password_confirm.html';
+        }
+         ,
      })    
      .when('/search',{
         templateUrl :function(params){
@@ -79,7 +85,16 @@ app.config(function($routeProvider,$locationProvider){
             return 'api/templates/'+params.pk +'/inbox.html';
         }
          ,
-     })
+     })    
+    
+    .when('/password_reset',{
+        templateUrl :function(params){
+            return 'api/templates/'+params.pk +'/password_reset.html';
+        }
+         ,
+     })    
+    .otherwise({
+        template  : 'Not Found' })
 }).run(function($cookies, $rootScope, $http) {
   	if ($cookies.get('token')) {
       $http.defaults.headers.common['Authorization'] = 'Token ' + $cookies.get('token');
@@ -130,6 +145,72 @@ app.controller('searchController',['$scope','searchService','$cookies','$locatio
         $scope.searchListGroup= searchService.searchListGroup;
         $scope.searchListPage= searchService.searchListPage;
         $scope.searchListPost= searchService.searchListPost;
+   
+}]);
+app.controller('resetController',['$scope','searchService','$routeParams','$location','$http' ,function($scope,searchService,$routeParams,$location,$http ){
+    
+        $scope.resetPasswordValue = {};
+        $scope.confirmPasswordValue = {};
+
+        $scope.resetPassword= function(){
+                var url="/rest-auth/password/reset/"
+                console.log(url)
+                console.log($scope.resetPasswordValue.email)
+
+        $http(
+            {
+            method:"POST",
+            url:url,
+            data:{
+                    'email':$scope.resetPasswordValue.email
+                }
+            }
+             ).then(
+            function(response){
+                 console.log(response.data )
+               },
+
+             function(response){
+                console.log(response)
+             }
+
+        ) 
+        };
+        $scope.confirmResetPassword= function(uid,token,password1,password2){
+                var url="/rest-auth/password/reset/confirm/"
+
+        if($scope.confirmPasswordValue.password1 == $scope.confirmPasswordValue.password2){
+        $http(
+            {
+            method:"POST",
+            url:url,
+            data:{
+                    'uid': $routeParams.uid,
+                    'token': $routeParams.token,
+                    'new_password1': $scope.confirmPasswordValue.password1,
+                    'new_password2': $scope.confirmPasswordValue.password2                }
+            }
+             ).then(
+            function(response){
+                 console.log(response )
+               },
+
+             function(response){
+                console.log(response)
+                 $("#confirmPasswordError").text("")
+                 $("#confirmPasswordError").text(response.data.new_password2)
+                 $("#confirmPasswordError").text(response.data.token +" for token ,Link must be Expired")
+             }
+
+        )}else{
+        $("#confirmPasswordError").text('Passwords Must Match')
+
+        } 
+            
+    
+       
+        };
+    
    
 }]);
 app.controller('postDetailController',['$scope','searchService','$cookies','$location','$http','$rootScope',function($scope,searchService,$cookies,$location,$http,$rootScope){
@@ -422,9 +503,7 @@ app.controller('headerController',['$scope','searchService','$cookies','$locatio
         $scope.changePassword=function(chpassword){
              var url='/api/accounts/change_password/'
              if($scope.chpassword.password ==$scope.chpassword.password1){ 
-              console.log($scope.chpassword)
-              console.log($scope.chpassword.password)
-              console.log($scope.chpassword.password1)
+
               $http(
                {
                  method:"POST",

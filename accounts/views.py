@@ -1,5 +1,5 @@
 
-# Create your views here.
+from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.urls import reverse_lazy
@@ -96,4 +96,6 @@ class ProfileDetailView(LoginRequiredMixin,DetailView):
         return context
 
 
-           
+def get_password_confirm_rest(request,*args,**kwargs):
+    return render(request,'base.html',{'login_form':UserLoginForm,'signup_form':UserSignUpForm,})
+ 

@@ -95,10 +95,10 @@
            <h4> {{c.content}} </h4><br/>
             via <a href="/accounts/{{c.user.username}}"> {{c.user.username}}</a> | <a  href='#' ng-click='likePage("api/comments/",c.id)'><span id="commentLike{{c.id}}"> {{c.verb_like}}</span>({{c.likes}})</a>
              |                <a href="#" id="replies" ng-click="get_comments(c.id,'reply')">replies ({{c.comment_count}})</a>
-              
+<!--              ng-if="r.user.username == loggedInUsername"-->
             <ul class="list-group" >
               <li class="list-group-item" ng-repeat="r in reply[c.id]">
-                 <ul ng-if="r.user.username == loggedInUsername" class="nav navbar-nav navbar-right">
+                 <ul  class="nav navbar-nav navbar-right">
                       <li class="dropdown">
                         <a ng-click="getPostPK(r.id,c.id)" href="#" class="right-list dropdown-toggle" data-toggle="dropdown">
                             Edit</a>

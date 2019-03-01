@@ -61,7 +61,9 @@ INSTALLED_APPS = [
     
    
         'rest_framework',
-#'parler',
+     'rest_framework.authtoken',
+
+    'rest_auth'  ,
     'axes',
     'storages',
     'accounts',

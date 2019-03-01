@@ -10,12 +10,16 @@ from posts.forms import PostCreateForm
 User=get_user_model()
 
 #class Home(LoginRequiredMixin,ListView):
-class Home(LoginRequiredMixin,ListView):
+class Home(ListView):
     template_name='index.html'
     def get_context_data(self,*args,**kwargs):
         context = super(Home,self).get_context_data(*args,**kwargs)
+        if self.request.user.is_authenticated:
+            friends=self.request.user.profile.friends.all()
+        else:
+            friends=[]
+            
         users =User.objects.exclude(pk=self.request.user.pk)
-        friends=self.request.user.profile.friends.all()
         context['post_form'] = PostCreateForm
         context['login_form'] = UserLoginForm
         context['signup_form'] = UserSignUpForm

@@ -39,8 +39,8 @@ urlpatterns = [
     path('api/files/',include('files.api.urls',namespace='files-api')),
     path('pages/',include('pages.urls',namespace='pages')),
     path('groups/',include('clubs.urls',namespace='groups')),
-    #path('api/posts/', include('posts.api.urls',namespace='posts-api')),
-
+    
+    url(r'^rest-auth/', include('rest_auth.urls')),    
     path('',views.Home.as_view(),name='home'),
     path('temp/',TemplateView.as_view(template_name='ang/home.html')),
     url(r'api/templates/(?P<name>[A-Za-z0-9\_\-\.\/]+)/(?P<item>[A-Za-z0-9\_\-\.\/]+)\.html$',AngularTemplateView.as_view()),

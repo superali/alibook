@@ -27,6 +27,7 @@ urlpatterns = [
     path('password_change/done', auth_views.PasswordChangeDoneView.as_view(extra_context={'login_form':UserLoginForm,'signup_form':UserSignUpForm ,}),name='password_change_done'),
     
         url(r'^(?P<username>[\w.@+-]+)/$',views.ProfileDetailView.as_view(), name='detail'),
+        url(r'^(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',views.get_password_confirm_rest , name='rest_pass'),
 
 ]
 
