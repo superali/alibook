@@ -147,15 +147,14 @@ app.controller('searchController',['$scope','searchService','$cookies','$locatio
         $scope.searchListPost= searchService.searchListPost;
    
 }]);
-app.controller('resetController',['$scope','searchService','$routeParams','$location','$http' ,function($scope,searchService,$routeParams,$location,$http ){
+app.controller('resetController',['$scope', '$routeParams', '$http' ,function($scope, $routeParams, $http ){
     
         $scope.resetPasswordValue = {};
         $scope.confirmPasswordValue = {};
 
         $scope.resetPassword= function(){
                 var url="/rest-auth/password/reset/"
-                console.log(url)
-                console.log($scope.resetPasswordValue.email)
+           
 
         $http(
             {
