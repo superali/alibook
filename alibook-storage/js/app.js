@@ -167,6 +167,8 @@ app.controller('resetController',['$scope', '$routeParams', '$http' ,function($s
              ).then(
             function(response){
                  console.log(response.data )
+                $("#confirmPasswordError").text(response.data.detail)
+
                },
 
              function(response){
@@ -198,6 +200,7 @@ app.controller('resetController',['$scope', '$routeParams', '$http' ,function($s
                 console.log(response)
                  $("#confirmPasswordError").text("")
                  $("#confirmPasswordError").text(response.data.new_password2)
+                 $("#confirmPasswordError").text(response.data.detail)
                  $("#confirmPasswordError").text(response.data.token +" for token ,Link must be Expired")
              }
 

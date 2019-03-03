@@ -16,18 +16,18 @@ urlpatterns = [
     path('login/',auth_views.LoginView.as_view(template_name='accounts/login.html'
     ,extra_context={'login_form':UserLoginForm,'signup_form':UserSignUpForm ,} ),name='login'), 
     path('logout/',auth_views.LogoutView.as_view(),name='logout'),
-    path('password_change/',auth_views.PasswordChangeView.as_view(extra_context={'login_form':UserLoginForm,'signup_form':UserSignUpForm ,}),name='password_change'),
-    path('password_reset/', auth_views.PasswordResetView.as_view(extra_context={'login_form':UserLoginForm,'signup_form':UserSignUpForm ,}),
-         name='password_reset'),
-    path('password_reset/done', auth_views.PasswordResetDoneView.as_view(extra_context={'login_form':UserLoginForm,'signup_form':UserSignUpForm ,}),name='password_reset_done'),
-    path('reset/done', auth_views.PasswordResetCompleteView.as_view(extra_context={'login_form':UserLoginForm,'signup_form':UserSignUpForm ,}),name='password_reset_complete'),
-    url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
-        auth_views.PasswordResetConfirmView.as_view(extra_context={'login_form':UserLoginForm,'signup_form':UserSignUpForm ,}), name='password_reset_confirm'),
-    
-    path('password_change/done', auth_views.PasswordChangeDoneView.as_view(extra_context={'login_form':UserLoginForm,'signup_form':UserSignUpForm ,}),name='password_change_done'),
-    
+#    path('password_change/',auth_views.PasswordChangeView.as_view(extra_context={'login_form':UserLoginForm,'signup_form':UserSignUpForm ,}),name='password_change'),
+#    path('password_reset/', auth_views.PasswordResetView.as_view(extra_context={'login_form':UserLoginForm,'signup_form':UserSignUpForm ,}),
+#         name='password_reset'),
+#    path('password_reset/done', auth_views.PasswordResetDoneView.as_view(extra_context={'login_form':UserLoginForm,'signup_form':UserSignUpForm ,}),name='password_reset_done'),
+#    path('reset/done', auth_views.PasswordResetCompleteView.as_view(extra_context={'login_form':UserLoginForm,'signup_form':UserSignUpForm ,}),name='password_reset_complete'),
+#    url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
+#        auth_views.PasswordResetConfirmView.as_view(extra_context={'login_form':UserLoginForm,'signup_form':UserSignUpForm ,}), name='password_reset_confirm'),
+##    
+#    path('password_change/done', auth_views.PasswordChangeDoneView.as_view(extra_context={'login_form':UserLoginForm,'signup_form':UserSignUpForm ,}),name='password_change_done'),
+#    
         url(r'^(?P<username>[\w.@+-]+)/$',views.ProfileDetailView.as_view(), name='detail'),
-        url(r'^(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',views.get_password_confirm_rest , name='rest_pass'),
+        url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',views.get_password_confirm_rest , name='rest_pass'),
 
 ]
 
