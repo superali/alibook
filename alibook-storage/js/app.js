@@ -68,7 +68,7 @@ app.config(function($routeProvider,$locationProvider){
         }
          ,
      })      
-    .when('/accounts/:uid/:token',{
+    .when('/accounts/reset/:uid/:token',{
         templateUrl :function(params){
             return 'api/templates/'+params.uid +'/password_confirm.html';
         }
